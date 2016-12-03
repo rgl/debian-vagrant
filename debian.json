@@ -1,0 +1,68 @@
+{
+  "variables": {
+    "disk_size": "8192"
+  },
+  "builders": [
+    {
+      "name": "debian-8.6-amd64-virtualbox",
+      "type": "virtualbox-iso",
+      "guest_os_type": "Debian_64",
+      "guest_additions_mode": "attach",
+      "headless": true,
+      "http_directory": ".",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "2048"],
+        ["modifyvm", "{{.Name}}", "--cpus", "2"],
+        ["modifyvm", "{{.Name}}", "--vram", "32"],
+        ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
+        ["modifyvm", "{{.Name}}", "--nictype2", "virtio"],
+        ["modifyvm", "{{.Name}}", "--nictype3", "virtio"],
+        ["modifyvm", "{{.Name}}", "--nictype4", "virtio"]
+      ],
+      "disk_size": "{{user `disk_size`}}",
+      "hard_drive_interface": "sata",
+      "iso_url": "http://cdimage.debian.org/debian-cd/8.6.0/amd64/iso-cd/debian-8.6.0-amd64-netinst.iso",
+      "iso_checksum": "9479c5c2df72ae3878116c43fb42eefae53d1fe363ce514a6afc8289064b9f5f",
+      "iso_checksum_type": "sha256",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "60m",
+      "boot_wait": "5s",
+      "boot_command": [
+        "<tab>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "/install.amd/vmlinuz initrd=/install.amd/initrd.gz",
+        " auto=true",
+        " url={{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
+        " hostname=vagrant",
+        " domain=home",
+        " net.ifnames=0",
+        " DEBCONF_DEBUG=5",
+        "<enter>"
+      ],
+      "shutdown_command": "echo vagrant | sudo -S poweroff"
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo vagrant | sudo -S bash {{.Path}}",
+      "scripts": ["provision.sh"]
+    }
+  ],
+
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "output": "{{.BuildName}}.box"
+    }
+  ]
+}
