@@ -4,7 +4,7 @@
   },
   "builders": [
     {
-      "name": "debian-8.6-amd64-virtualbox",
+      "name": "debian-9-amd64-virtualbox",
       "type": "virtualbox-iso",
       "guest_os_type": "Debian_64",
       "guest_additions_mode": "attach",
@@ -21,8 +21,8 @@
       ],
       "disk_size": "{{user `disk_size`}}",
       "hard_drive_interface": "sata",
-      "iso_url": "http://cdimage.debian.org/debian-cd/8.6.0/amd64/iso-cd/debian-8.6.0-amd64-netinst.iso",
-      "iso_checksum": "9479c5c2df72ae3878116c43fb42eefae53d1fe363ce514a6afc8289064b9f5f",
+      "iso_url": "http://cdimage.debian.org/cdimage/stretch_di_alpha8/amd64/iso-cd/debian-stretch-DI-alpha8-amd64-netinst.iso",
+      "iso_checksum": "5701b7fb2fb7600d0b0d70761924a40890ee25011e94a35ba7c6637382f5bb97",
       "iso_checksum_type": "sha256",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",

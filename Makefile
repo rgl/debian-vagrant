@@ -1,4 +1,4 @@
-VERSION=8.6
+VERSION=9
 
 debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.json
 	rm -f debian-${VERSION}-amd64-virtualbox.box
