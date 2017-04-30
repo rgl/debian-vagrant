@@ -5,7 +5,19 @@ Currently this targets [Debian Stretch 9](https://www.debian.org/releases/stretc
 
 # Usage
 
+Install [Packer](https://www.packer.io/), [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/).
+
 Type `make` and follow the instructions.
+
+Try the example guest:
+
+```bash
+cd example
+vagrant up
+vagrant ssh
+exit
+vagrant destroy -f
+```
 
 
 # Preseed
