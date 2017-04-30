@@ -7,6 +7,12 @@ d-i preseed/late_command string \
         echo "iface eth$i inet manual" >>/target/etc/network/interfaces; \
       done
 
+# do not scan for another cd.
+apt-cdrom-setup apt-setup/cdrom/set-double boolean true
+apt-cdrom-setup apt-setup/cdrom/set-failed boolean true
+apt-cdrom-setup apt-setup/cdrom/set-first boolean false
+apt-cdrom-setup apt-setup/cdrom/set-next boolean false
+
 d-i debian-installer/locale string en_US.UTF-8
 d-i localechooser/supported-locales multiselect en_US.UTF-8, pt_PT.UTF-8
 
