@@ -1,6 +1,6 @@
 {
   "variables": {
-    "disk_size": "8192"
+    "disk_size": "61440"
   },
   "builders": [
     {
