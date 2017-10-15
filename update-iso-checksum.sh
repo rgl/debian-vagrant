@@ -1,9 +1,9 @@
 #!/bin/bash
 # this will update the debian.json file with the current netboot image checksum.
 # see https://www.debian.org/CD/verify
-# see http://cdimage.debian.org/debian-cd/9.0.0/amd64/iso-cd/
+# see http://cdimage.debian.org/debian-cd/9.2.1/amd64/iso-cd/
 set -eux
-iso_url=$(jq -r '.builders[0].iso_url' debian.json)
+iso_url=$(jq -r '.variables.iso_url' debian.json)
 iso_checksum_url="$(dirname $iso_url)/SHA256SUMS"
 curl -O --silent --show-error $iso_checksum_url
 curl -O --silent --show-error $iso_checksum_url.sign

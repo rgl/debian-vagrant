@@ -1,10 +1,55 @@
 {
   "variables": {
-    "disk_size": "61440"
+    "disk_size": "61440",
+    "version": "9",
+    "iso_url": "http://cdimage.debian.org/debian-cd/9.2.1/amd64/iso-cd/debian-9.2.1-amd64-netinst.iso",
+    "iso_checksum": "ec78bc48b48d676775b60eda41528ec33c151c2ce7414a12b13d9b73d34de544",
+    "iso_checksum_type": "sha256"
   },
   "builders": [
     {
-      "name": "debian-9-amd64-virtualbox",
+      "name": "debian-{{user `version`}}-amd64-libvirt",
+      "type": "qemu",
+      "accelerator": "kvm",
+      "qemuargs": [
+        ["-m", "2048"],
+        ["-smp", "2"]
+      ],
+      "headless": true,
+      "http_directory": ".",
+      "format": "qcow2",
+      "disk_size": "{{user `disk_size`}}",
+      "disk_interface": "virtio",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "60m",
+      "boot_wait": "5s",
+      "boot_command": [
+        "<tab>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "/install.amd/vmlinuz initrd=/install.amd/initrd.gz",
+        " auto=true",
+        " url={{.HTTPIP}}:{{.HTTPPort}}/preseed-libvirt.txt.tmp",
+        " hostname=vagrant",
+        " domain=home",
+        " net.ifnames=0",
+        " DEBCONF_DEBUG=5",
+        "<enter>"
+      ],
+      "shutdown_command": "echo vagrant | sudo -S poweroff"
+    },
+    {
+      "name": "debian-{{user `version`}}-amd64-virtualbox",
       "type": "virtualbox-iso",
       "guest_os_type": "Debian_64",
       "guest_additions_mode": "attach",
@@ -21,9 +66,9 @@
       ],
       "disk_size": "{{user `disk_size`}}",
       "hard_drive_interface": "sata",
-      "iso_url": "http://cdimage.debian.org/debian-cd/9.2.0/amd64/iso-cd/debian-9.2.0-amd64-netinst.iso",
-      "iso_checksum": "bfe87c28bc842956cb31cd06737e821cdb67efcd043f64384c3688634bf6914a",
-      "iso_checksum_type": "sha256",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_wait_timeout": "60m",
@@ -50,7 +95,6 @@
       "shutdown_command": "echo vagrant | sudo -S poweroff"
     }
   ],
-
   "provisioners": [
     {
       "type": "shell",
@@ -58,11 +102,11 @@
       "scripts": ["provision.sh"]
     }
   ],
-
   "post-processors": [
     {
       "type": "vagrant",
-      "output": "{{.BuildName}}.box"
+      "output": "{{.BuildName}}.box",
+      "vagrantfile_template": "Vagrantfile.template"
     }
   ]
 }
