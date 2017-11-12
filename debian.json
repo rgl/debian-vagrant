@@ -39,7 +39,7 @@
         "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
         "/install.amd/vmlinuz initrd=/install.amd/initrd.gz",
         " auto=true",
-        " url={{.HTTPIP}}:{{.HTTPPort}}/preseed-libvirt.txt.tmp",
+        " url={{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
         " hostname=vagrant",
         " domain=home",
         " net.ifnames=0",
