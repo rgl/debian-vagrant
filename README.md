@@ -1,6 +1,6 @@
 This builds an up-to-date Vagrant Debian Base Box.
 
-Currently this targets [Debian Stretch 9](https://www.debian.org/releases/stretch/).
+Currently this targets [Debian Stretch 9.4](https://www.debian.org/releases/stretch/).
 
 
 # Usage
