@@ -58,6 +58,22 @@ Install [VirtuaBox](https://www.virtualbox.org/).
 
 Type `make build-virtualbox` and follow the instructions.
 
+Run packer to create the base box.
+In root directory, (for me, E:\projects\deb-base\debian-vagrant> )
+Check source iso is correct version and update checksum.
+
+```bash
+packer validate debian.json
+packer build debian.json
+```
+If build is successful add box to vb
+
+```bash
+vagrant box list
+vagrant box add debian-9-amd64 debian-9-amd64.box
+vagrant box list
+```
+
 Try the example guest:
 
 ```bash
