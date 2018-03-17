@@ -55,10 +55,13 @@ vagrant destroy -f
 ## VirtualBox usage
 
 Install [VirtuaBox](https://www.virtualbox.org/).
+
 On Linux
-Type `make build-virtualbox` and follow the instructions.
+
+Type `make build-virtualbox` and follow the instructions then try the guest below.
 
 On windows
+
 Run packer to create the base box.
 In root directory, (for me, E:\projects\deb-base\debian-vagrant> )
 Check source iso is correct version and update checksum.
