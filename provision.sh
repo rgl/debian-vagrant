@@ -24,7 +24,7 @@ chown -R vagrant:vagrant .
 popd
 
 # install the Guest Additions.
-if [ -n "$(lspci | grep VirtualBox)" ]; then
+if [ -n "$(lspci | grep VirtualBox | head -1)" ]; then
 # install the VirtualBox Guest Additions.
 # this will be installed at /opt/VBoxGuestAdditions-VERSION.
 # REMOVE_INSTALLATION_DIR=0 is to fix a bug in VBoxLinuxAdditions.run.
@@ -38,9 +38,14 @@ rm -rf /tmp/VBoxGuestAdditions
 umount /mnt
 eject /dev/sr1
 modinfo vboxguest
-else
+elif [ -n "$(lspci | grep 'Red Hat' | head -1)" ]; then
 # install the qemu-kvm Guest Additions.
 apt-get install -y qemu-guest-agent spice-vdagent
+elif [ -n "$(lspci | grep VMware | head -1)" ]; then
+# install the VMware Guest Additions.
+apt-get install -y open-vm-tools
+else
+echo 'ERROR: Unknown VM host.' || exit 1
 fi
 
 # install the nfs client to support nfs synced folders in vagrant.

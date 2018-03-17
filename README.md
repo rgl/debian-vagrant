@@ -5,7 +5,7 @@ Currently this targets [Debian Stretch 9](https://www.debian.org/releases/stretc
 
 # Usage
 
-Install [Packer](https://www.packer.io/), [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/).
+Install [Packer](https://www.packer.io/) and [Vagrant](https://www.vagrantup.com/).
 
 If you are on a Debian/Ubuntu host, you should also install and configure the NFS server. E.g.:
 
@@ -44,7 +44,7 @@ Try the example guest:
 ```bash
 cd example
 apt-get install -y virt-manager libvirt-dev
-vagrant plugin install vagrant-libvirt
+vagrant plugin install vagrant-libvirt # see https://github.com/vagrant-libvirt/vagrant-libvirt
 vagrant up --provider=libvirt
 vagrant ssh
 exit
@@ -69,17 +69,49 @@ vagrant destroy -f
 ```
 
 
+## ESXi usage
+
+[Install ESXi and ovftool](README-esxi.md).
+
+Type `make build-esxi` and follow the instructions.
+
+**NB** If this messes up, you might need to manually unregister the failed VM with, e.g.:
+
+```bash
+ssh root@10.2.0.198         # ssh into the esxi host.
+vim-cmd vmsvc/getallvms     # list all vms and their id.
+vim-cmd vmsvc/unregister 1  # unregister the vm with id 1.
+```
+
+**NB** When in doubt see [the packer esx5 driver source](https://github.com/hashicorp/packer/blob/master/builder/vmware/iso/driver_esx5.go).
+
+Try the example guest:
+
+```bash
+cd example
+vagrant plugin install vagrant-vmware-esxi # see https://github.com/josenk/vagrant-vmware-esxi
+vagrant up --provider=vmware_esxi
+vagrant ssh
+exit
+vagrant destroy -f
+```
+
+
 # Preseed
 
-The debian installation iso uses the debian installer (aka d-i) to install
-debian. During the installation it will ask you some questions and it will
-also store your anwsers in the debconf database. After the installation is
-complete, you can see its contents with the following commands:
+The debian installation iso uses the
+[debian installer](https://wiki.debian.org/DebianInstaller) (aka d-i) to
+install debian. During the installation it will ask you some questions and
+it will also store your anwsers in the debconf database. After the
+installation is complete, you can see its contents with the following
+commands:
 
 ```bash
 sudo su -l
 apt-get install debconf-utils
 debconf-get-selections --installer
+less /var/log/installer/syslog
+ls -la /var/log/installer/cdebconf
 ```
 
 In reality, before d-i asks a question, it will first look for the answer in
