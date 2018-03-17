@@ -29,7 +29,7 @@ if [ -n "$(lspci | grep VirtualBox)" ]; then
 # this will be installed at /opt/VBoxGuestAdditions-VERSION.
 # REMOVE_INSTALLATION_DIR=0 is to fix a bug in VBoxLinuxAdditions.run.
 # See http://stackoverflow.com/a/25943638.
-apt-get -y -q install gcc dkms bzip2 net-tools vim-nox git
+apt-get -y -q install gcc dkms bzip2 net-tools vim-nox git psmisc
 mkdir -p /mnt
 mount /dev/sr1 /mnt
 while [ ! -f /mnt/VBoxLinuxAdditions.run ]; do sleep 1; done
