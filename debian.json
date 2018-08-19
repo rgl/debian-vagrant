@@ -2,8 +2,8 @@
   "variables": {
     "disk_size": "61440",
     "version": "9",
-    "iso_url": "http://cdimage.debian.org/debian-cd/9.4.0/amd64/iso-cd/debian-9.4.0-amd64-netinst.iso",
-    "iso_checksum": "124d270006703f2111224dec3bf7a9d01450168be41d4834f88fdd035552b044",
+    "iso_url": "http://cdimage.debian.org/debian-cd/9.5.0/amd64/iso-cd/debian-9.5.0-amd64-netinst.iso",
+    "iso_checksum": "1f97a4b8dee7c3def5cd8215ff01b9edef27c901b28fa8b1ef4f022eff7c36c2",
     "iso_checksum_type": "sha256",
     "esxi_host": "10.2.0.198",
     "esxi_username": "root",
