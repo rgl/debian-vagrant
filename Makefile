@@ -6,9 +6,7 @@ help:
 	@echo 	export PACKER_LOG=1 PACKER_LOG_PATH=packer.log
 
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
-
 build-virtualbox: debian-${VERSION}-amd64-virtualbox.box
-
 build-esxi: debian-${VERSION}-amd64-esxi.box
 
 debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.json Vagrantfile.template
@@ -27,12 +25,17 @@ debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.json Vag
 	@echo to add to local vagrant install do:
 	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-virtualbox.box
 
-debian-${VERSION}-amd64-esxi.box: preseed.txt provision.sh debian.json Vagrantfile.template
+debian-${VERSION}-amd64-esxi.box: preseed.txt provision.sh debian-esxi.json dummy-esxi.box
 	rm -f debian-${VERSION}-amd64-esxi.box
-	PACKER_KEY_INTERVAL=10ms PACKER_ESXI_VNC_PROBE_TIMEOUT=50ms CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-amd64-esxi debian.json
+	PACKER_KEY_INTERVAL=10ms PACKER_ESXI_VNC_PROBE_TIMEOUT=15s CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
+		packer build -only=debian-${VERSION}-amd64-esxi debian-esxi.json
 	@echo BOX successfully built!
 	@echo to add to local vagrant install do:
-	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-esxi.box
+	@echo vagrant box add -f dummy dummy-esxi.box
+
+dummy-esxi.box:
+	echo '{"provider":"vmware_esxi"}' >metadata.json
+	tar cvf $@ metadata.json
+	rm metadata.json
 
 .PHONY: buid-libvirt build-virtualbox build-esxi
