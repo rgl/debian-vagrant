@@ -1,6 +1,6 @@
 Download the [ESXi](https://www.vmware.com/go/get-free-esxi) ISO file.
 
-Install it into a VM that has nested virtualization support. In my case, I've used libvirt and Virtual Machine Manager to create a KVM VM with a `host-passthrough` (for nested-virtualization) CPU type, a e1000 network interface connected to a 10.2.0.0/24 NAT network, a 80GB IDE disk and 6144MB (6GB) of memory.
+Install it into a VM that has nested virtualization support. In my case, I've used libvirt and Virtual Machine Manager to create a KVM VM with a `host-passthrough` (for nested-virtualization) CPU type, a e1000 network interface connected to a 10.2.0.0/24 NAT network, a 80GB IDE disk and 8192MB (8GB) of memory.
 
 **NB** For the examples to work, make sure you set the `root` password to `HeyH0Password`.
 
@@ -20,8 +20,9 @@ esxcli system version get
 esxcli network ip connection list
 
 # upgrade.
+# NB if you are having trouble to install the upgrade, increase the memory of the VM.
 esxcli network firewall ruleset set -e true -r httpClient
-esxcli software profile update -p ESXi-6.7.0-20181104001-standard \
+esxcli software profile update -p ESXi-6.7.0-20190104001-standard \
   -d https://hostupdate.vmware.com/software/VUM/PRODUCTION/main/vmw-depot-index.xml
 esxcli network firewall ruleset set -e false -r httpClient
 
@@ -68,28 +69,12 @@ esxcli system settings advanced set -o /Net/GuestIPHack -i 1
 
 Configure the firewall to allow VNC access:
 
-```
+```bash
 stat /etc/vmware/firewall/service.xml
 chmod 644 /etc/vmware/firewall/service.xml
 chmod +t /etc/vmware/firewall/service.xml
+grep '<id>vnc</id>' /etc/vmware/firewall/service.xml || sed -i -E 's,(</ConfigRoot>),<service id="1000"><id>vnc</id><rule id="0000"><direction>inbound</direction><protocol>tcp</protocol><porttype>dst</porttype><port><begin>5900</begin><end>6000</end></port></rule></service>\n\1,' /etc/vmware/firewall/service.xml
 vi /etc/vmware/firewall/service.xml
-```
-
-Add the following element to the end of the `service.xml` document:
-
-```xml
-  <service id="1000">
-    <id>vnc</id>
-    <rule id="0000">
-      <direction>inbound</direction>
-      <protocol>tcp</protocol>
-      <porttype>dst</porttype>
-      <port>
-        <begin>5900</begin>
-        <end>6000</end>
-      </port>
-    </rule>
-  </service>
 ```
 
 Refresh the firewall:
