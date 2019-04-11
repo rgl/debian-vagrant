@@ -10,6 +10,8 @@ curl -O --silent --show-error $iso_checksum_url.sign
 gpg --keyserver hkp://keyring.debian.org/ --recv-keys 0x64E6EA7D 0x6294BE9B 0x09EA8AC3
 gpg --verify SHA256SUMS.sign SHA256SUMS
 iso_checksum=$(grep $(basename $iso_url) SHA256SUMS | awk '{print $1}')
-sed -i -E "s,(\"iso_checksum\": \")([a-f0-9]+)(\"),\\1$iso_checksum\\3,g" debian.json
+for f in debian*.json; do
+    sed -i -E "s,(\"iso_checksum\": \")([a-f0-9]+)(\"),\\1$iso_checksum\\3,g" $f
+done
 rm SHA256SUMS*
 echo 'iso_checksum updated successfully'
