@@ -1,6 +1,6 @@
 This builds an up-to-date Vagrant Debian Base Box.
 
-Currently this targets [Debian Stretch 9](https://www.debian.org/releases/stretch/).
+Currently this targets [Debian Buster 10](https://www.debian.org/releases/buster/).
 
 
 # Usage
@@ -102,7 +102,7 @@ vagrant destroy -f
 The debian installation iso uses the
 [debian installer](https://wiki.debian.org/DebianInstaller) (aka d-i) to
 install debian. During the installation it will ask you some questions and
-it will also store your anwsers in the debconf database. After the
+it will also store your answers in the debconf database. After the
 installation is complete, you can see its contents with the following
 commands:
 
@@ -126,5 +126,5 @@ packer during the machine provisioning.
 
 # Reference
 
-* Debian Stretch [Appendix B. Automating the installation using preseeding](https://www.debian.org/releases/stretch/amd64/apb.html.en)
-* Debian Stretch [example-preseed.txt](https://www.debian.org/releases/stretch/example-preseed.txt)
+* Debian Buster [Appendix B. Automating the installation using preseeding](https://www.debian.org/releases/buster/amd64/apb.en.html)
+* Debian Buster [example-preseed.txt](https://www.debian.org/releases/buster/example-preseed.txt)

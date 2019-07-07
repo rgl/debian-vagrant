@@ -1,5 +1,5 @@
 Vagrant.configure(2) do |config|
-  config.vm.box = 'debian-9-amd64'
+  config.vm.box = 'debian-10-amd64'
 
   config.vm.hostname = 'example'
 
@@ -20,7 +20,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provider 'vmware_esxi' do |esxi, config|
     config.vm.box = 'dummy'
-    esxi.clone_from_vm = 'packer-debian-9-amd64-esxi'
+    esxi.clone_from_vm = 'packer-debian-10-amd64-esxi'
     esxi.esxi_hostname = '10.2.0.198'
     esxi.esxi_username = 'root'
     esxi.esxi_password = 'HeyH0Password'

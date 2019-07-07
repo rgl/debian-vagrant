@@ -1,9 +1,9 @@
 {
   "variables": {
     "disk_size": "61440",
-    "version": "9",
-    "iso_url": "http://cdimage.debian.org/debian-cd/9.9.0/amd64/iso-cd/debian-9.9.0-amd64-netinst.iso",
-    "iso_checksum": "d4a22c81c76a66558fb92e690ef70a5d67c685a08216701b15746586520f6e8e",
+    "version": "10",
+    "iso_url": "https://cdimage.debian.org/debian-cd/10.0.0/amd64/iso-cd/debian-10.0.0-amd64-netinst.iso",
+    "iso_checksum": "3dbb597b7f11dbda71cda08d4c1339c1eb565e784c75409987fa2b91182d9240",
     "iso_checksum_type": "sha256"
   },
   "builders": [

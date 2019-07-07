@@ -14,6 +14,9 @@ usermod -a -G admin vagrant
 gpasswd -d vagrant sudo
 echo '%admin ALL=(ALL) NOPASSWD:ALL' >/etc/sudoers.d/admin
 
+# install the wget dependency.
+apt-get install -y wget
+
 # install the vagrant public key.
 # NB vagrant will replace it on the first run.
 install -d -m 700 /home/vagrant/.ssh
@@ -90,8 +93,8 @@ rm -f /var/lib/dbus/machine-id
 #       sudo guestunmount /mnt
 #       sudo bash -c 'while kill -0 $(cat guestmount.pid) 2>/dev/null; do sleep .1; done; rm guestmount.pid' # wait for guestmount to finish.
 # see https://www.freedesktop.org/software/systemd/man/systemd-random-seed.service.html
-# see https://manpages.debian.org/stretch/manpages/random.4.en.html
-# see https://manpages.debian.org/stretch/manpages/random.7.en.html
+# see https://manpages.debian.org/buster/manpages/random.4.en.html
+# see https://manpages.debian.org/buster/manpages/random.7.en.html
 # see https://github.com/systemd/systemd/blob/master/src/random-seed/random-seed.c
 # see https://github.com/torvalds/linux/blob/master/drivers/char/random.c
 systemctl stop systemd-random-seed
