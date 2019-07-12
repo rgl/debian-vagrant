@@ -3,4 +3,5 @@ packer_cache/
 tmp/
 *.tmp
 *.box
+*.log
 output*
