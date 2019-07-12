@@ -54,7 +54,7 @@
       "name": "debian-{{user `version`}}-amd64-virtualbox",
       "type": "virtualbox-iso",
       "guest_os_type": "Debian_64",
-      "guest_additions_mode": "attach",
+      "guest_additions_mode": "upload",
       "headless": true,
       "http_directory": ".",
       "vboxmanage": [
