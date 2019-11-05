@@ -21,7 +21,7 @@ apt-get install -y wget
 # NB vagrant will replace it on the first run.
 install -d -m 700 /home/vagrant/.ssh
 pushd /home/vagrant/.ssh
-wget --no-check-certificate https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub -O authorized_keys
+wget -qOauthorized_keys https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub
 chmod 600 authorized_keys
 chown -R vagrant:vagrant .
 popd
