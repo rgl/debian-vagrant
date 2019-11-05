@@ -7,12 +7,9 @@ set -x
 # make sure we cannot directly login as root.
 usermod --lock root
 
-# let our user use root permissions without sudo asking for a password (because
-# d-i adds us into the sudo group, but we must be on the admin group instead).
-groupadd -r admin
-usermod -a -G admin vagrant
-gpasswd -d vagrant sudo
-echo '%admin ALL=(ALL) NOPASSWD:ALL' >/etc/sudoers.d/admin
+# let the sudo group members use root permissions without a password.
+# NB d-i automatically adds vagrant into the sudo group.
+sed -i -E 's,^%sudo\s+.+,%sudo ALL=(ALL) NOPASSWD:ALL,g' /etc/sudoers
 
 # install the wget dependency.
 apt-get install -y wget
