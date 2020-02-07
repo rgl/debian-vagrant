@@ -57,7 +57,13 @@ exit
 
 **NB** if the update fails with a `No Space Left On Device` error, set the swap datastore to `datastore1` at `Host | Manage | System | Swap`.
 
-Install [ovftool](https://www.vmware.com/support/developer/ovf/).
+Download the [ovftool bundle](https://code.vmware.com/tool/ovf) and save it as the `ovftool.bundle` file, then install it with, e.g.:
+
+```bash
+TERM=dumb sh ovftool.bundle --eulas-agreed --required --prefix=/opt/ovftool
+ln -s /opt/ovftool/lib/vmware-ovftool/ovftool /usr/local/bin/
+ovftool --version
+```
 
 Enable guest ARP inspection to get IP (aka the Guest IP Hack):
 
