@@ -5,9 +5,13 @@ Currently this targets [Debian Buster 10](https://www.debian.org/releases/buster
 
 # Usage
 
-Install [Packer](https://www.packer.io/) and [Vagrant](https://www.vagrantup.com/).
+## Ubuntu Host
 
-If you are on a Debian/Ubuntu host, you should also install and configure the NFS server. E.g.:
+On a Ubuntu host, install the dependencies by running the file at:
+
+    https://github.com/rgl/xfce-desktop-vagrant/blob/master/provision-virtualization-tools.sh
+
+And you should also install and configure the NFS server. E.g.:
 
 ```bash
 # install the nfs server.
@@ -26,6 +30,26 @@ EOF
 
 For more information see the [Vagrant NFS documentation](https://www.vagrantup.com/docs/synced-folders/nfs.html).
 
+## Windows Host
+
+On a Windows host, install [Chocolatey](https://chocolatey.org/install), then execute the following PowerShell commands in a Administrator PowerShell window:
+
+```powershell
+choco install -y virtualbox --params "/NoDesktopShortcut /ExtensionPack"
+choco install -y packer vagrant jq msys2
+```
+
+Then open a bash shell by starting `C:\tools\msys64\mingw64.exe` and install the remaining dependencies:
+
+```bash
+pacman --noconfirm -Sy make zip unzip tar dos2unix netcat procps xorriso mingw-w64-x86_64-libcdio
+for n in /*.ini; do
+    sed -i -E 's,^#?(MSYS2_PATH_TYPE)=.+,\1=inherit,g' $n
+done
+exit
+```
+
+**NB** The commands described in this README should be executed in a mingw64 bash shell.
 
 ## qemu-kvm usage
 
@@ -91,6 +115,57 @@ Try the example guest:
 cd example
 vagrant plugin install vagrant-vmware-esxi # see https://github.com/josenk/vagrant-vmware-esxi
 vagrant up --provider=vmware_esxi
+vagrant ssh
+exit
+vagrant destroy -f
+```
+
+
+## VMware vSphere usage
+
+Download [govc](https://github.com/vmware/govmomi/releases/latest) and place it inside your `/usr/local/bin` directory.
+
+Install the [vsphere vagrant plugin](https://github.com/nsidc/vagrant-vsphere), set your vSphere details, and test the connection to vSphere:
+
+```bash
+sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev
+vagrant plugin install vagrant-vsphere
+cd example
+cat >secrets.sh <<EOF
+export GOVC_INSECURE='1'
+export GOVC_HOST='vsphere.local'
+export GOVC_URL="https://$GOVC_HOST/sdk"
+export GOVC_USERNAME='administrator@vsphere.local'
+export GOVC_PASSWORD='password'
+export GOVC_DATACENTER='Datacenter'
+export GOVC_CLUSTER='Cluster'
+export GOVC_DATASTORE='Datastore'
+export VSPHERE_ESXI_HOST='esxi.local'
+export VSPHERE_TEMPLATE_FOLDER='test/templates'
+export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-10-amd64-vsphere"
+export VSPHERE_VM_FOLDER='test'
+export VSPHERE_VM_NAME='debian-vagrant-example'
+export VSPHERE_VLAN='packer'
+EOF
+source secrets.sh
+# see https://github.com/vmware/govmomi/blob/master/govc/USAGE.md
+govc version
+govc about
+govc datacenter.info # list datacenters
+govc find # find all managed objects
+```
+
+Download the Debian ISO (you can find the full iso URL in the [debian.json](debian.json) file) and place it inside the datastore as defined by the `vsphere_iso_url` user variable that is inside the [packer template](debian-vsphere.json).
+
+See the [example Vagrantfile](example/Vagrantfile) to see how you could use a cloud-init configuration to configure the VM.
+
+Type `make build-vsphere` and follow the instructions.
+
+Try the example guest:
+
+```bash
+source secrets.sh
+vagrant up --provider=vsphere
 vagrant ssh
 exit
 vagrant destroy -f

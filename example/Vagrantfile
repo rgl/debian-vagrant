@@ -1,7 +1,96 @@
+require 'base64'
+require 'digest/sha1'
+require 'fileutils'
+require 'stringio'
+require 'zlib'
+
+$provision_username = 'vagrant'
+$provision_password = 'abracadabra'
+
+def gzip_base64(data)
+  o = StringIO.new() 
+  w = Zlib::GzipWriter.new(o)
+  w.write(data)
+  w.close()
+  Base64.strict_encode64(o.string)
+end
+
+# add the cloud-init data as a NoCloud cloud-init iso.
+# NB libvirtd libvirt-qemu:kvm MUST have read permissions to the iso file path.
+# see https://cloudinit.readthedocs.io/en/latest/topics/datasources/nocloud.html
+def create_cloud_init_iso(config, provider, group, cloud_init_user_data, cloud_init_network_config)
+  cloud_init_data_path = "#{ENV['TMP'] || '/tmp'}/cidata-#{provider}/cidata-#{Digest::SHA1.hexdigest(__FILE__)}.iso"
+  config.trigger.before :up do |trigger|
+    trigger.ruby do |env, machine|
+      if !File.exists?(cloud_init_data_path) || File.mtime(cloud_init_data_path) < File.mtime(__FILE__)
+        cloud_init_data_parent_path = File.dirname(cloud_init_data_path)
+        FileUtils.mkdir_p(cloud_init_data_parent_path, :mode => 0750)
+        FileUtils.chown(nil, group, cloud_init_data_parent_path)
+        FileUtils.rm_f(cloud_init_data_path)
+        cloud_init_staging_path = "tmp/cidata-#{provider}"
+        FileUtils.mkdir_p(cloud_init_staging_path)
+        File.write("#{cloud_init_staging_path}/meta-data", '{}')
+        File.write("#{cloud_init_staging_path}/user-data", "#cloud-config\n#{cloud_init_user_data.to_json}")
+        File.write("#{cloud_init_staging_path}/network-config", cloud_init_network_config.to_json)
+        env.ui.info 'Creating the cloud-init cidata.iso file...'
+        raise 'Failed to execute xorriso to create the cloud-init cidata.iso file' unless system(
+          'xorriso',
+            '-as', 'genisoimage',
+            '-output', cloud_init_data_path,
+            '-volid', 'cidata',
+            '-joliet',
+            '-rock',
+            cloud_init_staging_path)
+        env.ui.info 'The cloud-init cidata.iso file was created as:'
+        system('iso-info', '--no-header', '-i', cloud_init_data_path)
+      end
+    end
+  end
+  cloud_init_data_path
+end
+
+cloud_init_network_config = {
+  # Uncomment these properties to configure a static IP address.
+  # 'version' => 2,
+  # 'ethernets' => {
+  #   'eth0' => {
+  #     'dhcp4' => false,
+  #     'addresses' => [
+  #       '10.0.0.123/24',
+  #     ],
+  #     'gateway4' => '10.0.0.1',
+  #     'nameservers' => {
+  #       'addresses' => [
+  #         '10.0.0.1',
+  #       ],
+  #     },
+  #   },
+  # },
+}
+
+cloud_init_user_data = {
+  # modify the provisioning user credentials.
+  'users' => [
+    {
+      'name' => $provision_username,
+      'plain_text_passwd' => $provision_password,
+      'lock_passwd' => false,
+    },
+  ],
+  # NB the runcmd output is written to journald and /var/log/cloud-init-output.log.
+  'runcmd' => [
+    "echo '************** DONE RUNNING CLOUD-INIT **************'",
+  ],
+}
+
 Vagrant.configure(2) do |config|
   config.vm.box = 'debian-10-amd64'
 
-  config.vm.hostname = 'example'
+  config.vm.hostname = 'example.test'
+
+  # use the credentials defined in cloud_init_user_data.
+  config.ssh.username = $provision_username
+  config.ssh.password = $provision_password
 
   config.vm.provider 'libvirt' do |lv, config|
     lv.memory = 2048
@@ -9,6 +98,7 @@ Vagrant.configure(2) do |config|
     lv.cpu_mode = 'host-passthrough'
     lv.nested = true
     lv.keymap = 'pt'
+    lv.storage :file, :device => :cdrom, :path => create_cloud_init_iso(config, 'libvirt', 'kvm', cloud_init_user_data, cloud_init_network_config)
     config.vm.synced_folder '.', '/vagrant', type: 'nfs'
   end
 
@@ -16,6 +106,13 @@ Vagrant.configure(2) do |config|
     vb.linked_clone = true
     vb.memory = 2048
     vb.cpus = 2
+    vb.customize [
+      'storageattach', :id,
+      '--storagectl', 'SATA Controller',
+      '--device', 0,
+      '--port', 1,
+      '--type', 'dvddrive',
+      '--medium', create_cloud_init_iso(config, 'virtualbox', nil, cloud_init_user_data, cloud_init_network_config)]
   end
 
   config.vm.provider 'vmware_esxi' do |esxi, config|
@@ -31,6 +128,38 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder '.', '/vagrant', type: 'nfs'
   end
 
+  config.vm.provider 'vsphere' do |vsphere, override|
+    override.vm.box = 'dummy'
+    vsphere.name = ENV['VSPHERE_VM_NAME']
+    vsphere.notes = "Created from #{__FILE__}"
+    vsphere.cpu_count = 2
+    vsphere.memory_mb = 2*1024
+    vsphere.user = ENV['GOVC_USERNAME']
+    vsphere.password = ENV['GOVC_PASSWORD']
+    vsphere.insecure = true
+    vsphere.host = ENV['GOVC_HOST']
+    vsphere.data_center_name = ENV['GOVC_DATACENTER']
+    vsphere.compute_resource_name = ENV['GOVC_CLUSTER']
+    vsphere.data_store_name = ENV['GOVC_DATASTORE']
+    vsphere.template_name = ENV['VSPHERE_TEMPLATE_NAME']
+    vsphere.vm_base_path = ENV['VSPHERE_VM_FOLDER']
+    vsphere.vlan = ENV['VSPHERE_VLAN']
+    # NB the extra_config data ends-up inside the VM .vmx file.
+    # NB the guestinfo properties will be exposed by cloud-init-vmware-guestinfo
+    #    as a cloud-init datasource.
+    # See https://github.com/vmware/cloud-init-vmware-guestinfo
+    vsphere.extra_config = {
+      'guestinfo.metadata' => gzip_base64({
+        'network' => gzip_base64(cloud_init_network_config.to_json),
+        'network.encoding' => 'gzip+base64',
+      }.to_json),
+      'guestinfo.metadata.encoding' => 'gzip+base64',
+      'guestinfo.userdata' => gzip_base64(cloud_init_user_data.to_json),
+      'guestinfo.userdata.encoding' => 'gzip+base64',
+    }
+  end
+
+  config.vm.provision 'shell', inline: "echo \"provisioning user is $(id #{$provision_username})\""
   config.vm.provision 'shell', inline: 'cat /etc/os-release', name: 'os-release'
   config.vm.provision 'shell', inline: 'echo "machine-id is $(cat /etc/machine-id)"'
   config.vm.provision 'shell', inline: 'cat /etc/debian_version', name: 'debian_version'
