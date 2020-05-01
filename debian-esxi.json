@@ -43,7 +43,7 @@
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
-      "ssh_wait_timeout": "60m",
+      "ssh_timeout": "60m",
       "boot_wait": "30s",
       "boot_command": [
         "<tab>",
