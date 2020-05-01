@@ -15,7 +15,8 @@
     {
       "name": "debian-{{user `version`}}-amd64-esxi",
       "type": "vmware-iso",
-      "guest_os_type": "debian9-64",
+      "version": "15",
+      "guest_os_type": "debian10-64",
       "headless": true,
       "http_directory": ".",
       "disk_size": "{{user `disk_size`}}",
@@ -31,7 +32,6 @@
       "skip_export": true,
       "keep_registered": true,
       "vnc_disable_password": true,
-      "version": "13",
       "network_adapter_type": "vmxnet3",
       "vmx_data": {
         "memSize": "2048",
