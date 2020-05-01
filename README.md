@@ -102,7 +102,7 @@ Type `make build-esxi` and follow the instructions.
 **NB** If this messes up, you might need to manually unregister the failed VM with, e.g.:
 
 ```bash
-ssh root@10.2.0.198         # ssh into the esxi host.
+ssh root@esxi.test          # ssh into the esxi host.
 vim-cmd vmsvc/getallvms     # list all vms and their id.
 vim-cmd vmsvc/unregister 1  # unregister the vm with id 1.
 ```

@@ -1,18 +1,26 @@
+# Install
+
+If you can, follow [rgl/esxi-vagrant](https://github.com/rgl/esxi-vagrant)
+to create the base box, otherwise follow the next section to manually
+install ESXi.
+
+## Manual Install
+
 Download the [ESXi](https://www.vmware.com/go/get-free-esxi) ISO file.
 
 Install it into a VM that has nested virtualization support. In my case, I've used libvirt and Virtual Machine Manager to create a KVM VM with a `host-passthrough` (for nested-virtualization) CPU type, a e1000 network interface connected to a 10.2.0.0/24 NAT network, a 80GB IDE disk and 8192MB (8GB) of memory.
 
 **NB** For the examples to work, make sure you set the `root` password to `HeyH0Password`.
 
-**NB** The examples assume ESXi is at the `10.2.0.198` address.
+**NB** The examples assume ESXi is at the `esxi.test` address.
 
-Once ESXi is installed, access the [HTML UI](https://10.2.0.198) and enable SSH through the `Host | Manage | Services | Right click the TSM-SSH service | Policy | Start and stop with host` then `Start` it.
+Once ESXi is installed, access the [HTML UI](https://esxi.test) and enable SSH through the `Host | Manage | Services | Right click the TSM-SSH service | Policy | Start and stop with host` then `Start` it.
 
 Upgrade ESXi by grabbing the latest imageprofile from https://esxi-patches.v-front.de/ESXi-6.7.0.html and follow the instructions. At the time of writing, the latest imageprofile was ESXi-6.7.0-20181104001-standard (Build 10764712) and the instructions were:
 
 ```bash
 # ssh into ESXi and enter the maintenance mode.
-ssh root@10.2.0.198
+ssh root@esxi.test
 vim-cmd hostsvc/maintenance_mode_enter
 
 # see current version.
@@ -45,7 +53,7 @@ rm VMware_locker_tools-light_10.3.2.9925305-10176879.vib
 reboot
 
 # ssh into ESXi and exit the maintenance mode.
-ssh root@10.2.0.198
+ssh root@esxi.test
 vim-cmd hostsvc/maintenance_mode_exit
 
 # verify the version and exit.
@@ -53,7 +61,7 @@ esxcli system version get
 exit
 ```
 
-**NB** view the logs at /var/log/esxupdate.log (or https://10.2.0.198/ui/#/host/monitor/logs).
+**NB** view the logs at /var/log/esxupdate.log (or https://esxi.test/ui/#/host/monitor/logs).
 
 **NB** if the update fails with a `No Space Left On Device` error, set the swap datastore to `datastore1` at `Host | Manage | System | Swap`.
 
@@ -68,7 +76,7 @@ ovftool --version
 Enable guest ARP inspection to get IP (aka the Guest IP Hack):
 
 ```bash
-ssh root@10.2.0.198
+ssh root@esxi.test
 esxcli system settings advanced list -o /Net/GuestIPHack
 esxcli system settings advanced set -o /Net/GuestIPHack -i 1
 ```
@@ -108,5 +116,5 @@ esxcli network firewall ruleset rule list | grep vnc
 * Show a VM details, e.g. show the `example` VM details:
 
     ```
-    ovftool --noSSLVerify=true vi://root:HeyH0Password@10.2.0.198/example
+    ovftool --noSSLVerify=true vi://root:HeyH0Password@esxi.test/example
     ```

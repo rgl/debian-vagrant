@@ -5,7 +5,7 @@
     "iso_url": "https://cdimage.debian.org/debian-cd/10.3.0/amd64/iso-cd/debian-10.3.0-amd64-netinst.iso",
     "iso_checksum": "6a901b5abe43d88b39d627e1339d15507cc38f980036b928f835e0f0e957d3d8",
     "iso_checksum_type": "sha256",
-    "esxi_host": "10.2.0.198",
+    "esxi_host": "esxi.test",
     "esxi_username": "root",
     "esxi_password": "HeyH0Password",
     "esxi_datastore": "datastore1",
