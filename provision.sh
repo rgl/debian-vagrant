@@ -50,8 +50,14 @@ apt-get install -y rsync
 # is kinda slow and does not normally work when running inside VB.
 echo UseDNS no >>/etc/ssh/sshd_config
 
+# show boot messages.
+# NB the default is "quiet".
+sed -i -E 's,^(GRUB_CMDLINE_LINUX_DEFAULT\s*=).*,\1"",g' /etc/default/grub
+
 # disable the graphical terminal. its kinda slow and useless on a VM.
 sed -i -E 's,#(GRUB_TERMINAL\s*=).*,\1console,g' /etc/default/grub
+
+# apply the grub configuration.
 update-grub
 
 # use the up/down arrows to navigate the bash history.
