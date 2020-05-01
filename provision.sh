@@ -31,13 +31,12 @@ if [ -n "$(lspci | grep VMware | head -1)" ]; then
 #    https://github.com/vmware/cloud-init-vmware-guestinfo/issues/2 but in the meantime
 #    we are really installing from an internet pipe.
 # see https://github.com/vmware/cloud-init-vmware-guestinfo
-apt-get install -y --no-install-recommends curl
-apt-get install -y --no-install-recommends python3-pip
-export GIT_REF='242f539c80fb6167c023a0098993fcdb71a19e54'
+apt-get install -y --no-install-recommends curl python3-pip python3-setuptools python3-wheel python3-dev gcc
+export GIT_REF='bf996d9e8be63c4fae114a651a5e014f98b7783c'
 wget -qO- https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo/$GIT_REF/install.sh \
     | bash -x -
 unset GIT_REF
-apt-get remove -y --purge curl
+apt-get remove -y --purge curl python3-dev gcc
 fi
 
 # install the nfs client to support nfs synced folders in vagrant.
