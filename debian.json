@@ -3,7 +3,9 @@
     "disk_size": "61440",
     "version": "10",
     "iso_url": "https://cdimage.debian.org/debian-cd/10.4.0/amd64/iso-cd/debian-10.4.0-amd64-netinst.iso",
-    "iso_checksum": "sha256:ab3763d553330e90869487a6843c88f1d4aa199333ff16b653e60e59ac1fc60b"
+    "iso_checksum": "sha256:ab3763d553330e90869487a6843c88f1d4aa199333ff16b653e60e59ac1fc60b",
+    "hyperv_switch_name": "{{env `HYPERV_SWITCH_NAME`}}",
+    "hyperv_vlan_id": "{{env `HYPERV_VLAN_ID`}}"
   },
   "builders": [
     {
@@ -95,6 +97,42 @@
       ],
       "shutdown_command": "echo vagrant | sudo -S poweroff",
       "post_shutdown_delay": "2m"
+    },
+    {
+      "name": "debian-{{user `version`}}-amd64-hyperv",
+      "type": "hyperv-iso",
+      "temp_path": "tmp",
+      "headless": true,
+      "http_directory": ".",
+      "generation": 2,
+      "cpus": 2,
+      "memory": 2048,
+      "switch_name": "{{user `hyperv_switch_name`}}",
+      "vlan_id": "{{user `hyperv_vlan_id`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_timeout": "60m",
+      "first_boot_device": "DVD",
+      "boot_order": ["SCSI:0:0"],
+      "boot_wait": "5s",
+      "boot_command": [
+        "c<wait>",
+        "linux /install.amd/vmlinuz",
+        " auto=true",
+        " url={{.HTTPIP}}:{{.HTTPPort}}/tmp/preseed-hyperv.txt",
+        " hostname=vagrant",
+        " domain=home",
+        " net.ifnames=0",
+        " BOOT_DEBUG=2",
+        " DEBCONF_DEBUG=5",
+        "<enter>",
+        "initrd /install.amd/initrd.gz<enter>",
+        "boot<enter>"
+      ],
+      "shutdown_command": "echo vagrant | sudo -S poweroff"
     }
   ],
   "provisioners": [
@@ -105,6 +143,19 @@
       "scripts": [
         "provision-guest-additions.sh",
         "provision.sh"
+      ]
+    },
+    {
+      "type": "shell-local",
+      "environment_vars": [
+        "PACKER_VERSION={{packer_version}}",
+        "PACKER_VM_NAME={{build `ID`}}"
+      ],
+      "scripts": [
+        "provision-local-hyperv.cmd"
+      ],
+      "only": [
+        "debian-{{user `version`}}-amd64-hyperv"
       ]
     }
   ],

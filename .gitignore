@@ -5,3 +5,5 @@ tmp/
 *.box
 *.log
 output*
+secrets*
+*-packages.txt

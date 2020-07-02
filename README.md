@@ -5,6 +5,8 @@ Currently this targets [Debian Buster 10](https://www.debian.org/releases/buster
 
 # Usage
 
+Install Packer 1.6+ and Vagrant 2.2.9+.
+
 ## Ubuntu Host
 
 On a Ubuntu host, install the dependencies by running the file at:
@@ -87,6 +89,68 @@ Try the example guest:
 ```bash
 cd example
 vagrant up --provider=virtualbox
+vagrant ssh
+exit
+vagrant destroy -f
+```
+
+
+## Hyper-V usage
+
+Install [Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)
+and also install the `Windows Sandbox` feature (for some reason,
+installing this makes DHCP work properly in the vEthernet Default Switch).
+
+Make sure your user is in the `Hyper-V Administrators` group
+or you run with Administrative privileges.
+
+Make sure your Virtual Switch (its vEthernet network adapter) is excluded
+from the Windows Firewall protected network connections by executing the
+following commands in a bash shell with Administrative privileges:
+
+```bash
+PowerShell -Command 'Get-NetFirewallProfile | Select-Object -Property Name,DisabledInterfaceAliases'
+PowerShell -Command 'Set-NetFirewallProfile -DisabledInterfaceAliases (Get-NetAdapter -name "vEthernet*" | Where-Object {$_.ifIndex}).InterfaceAlias'
+```
+
+Create the base image in a bash shell with Administrative privileges:
+
+```bash
+cat >secrets.sh <<'EOF'
+# set this value when you need to set the VM Switch Name.
+export HYPERV_SWITCH_NAME='Default Switch'
+# set this value when you need to set the VM VLAN ID.
+export HYPERV_VLAN_ID=''
+# set the credentials that the guest will use
+# to connect to this host smb share.
+# NB you should create a new local user named _vagrant_share
+#    and use that one here instead of your user credentials.
+# NB it would be nice for this user to have its credentials
+#    automatically rotated, if you implement that feature,
+#    let me known!
+export VAGRANT_SMB_USERNAME='_vagrant_share'
+export VAGRANT_SMB_PASSWORD=''
+# remove the virtual switch from the windows firewall.
+# NB execute if the VM fails to obtain an IP address from DHCP.
+PowerShell -Command 'Set-NetFirewallProfile -DisabledInterfaceAliases (Get-NetAdapter -name "vEthernet*" | Where-Object {$_.ifIndex}).InterfaceAlias'
+EOF
+source secrets.sh
+make build-hyperv
+```
+
+Try the example guest:
+
+**NB** You will need Administrative privileges to create the SMB share.
+
+```bash
+cd example
+# grant $VAGRANT_SMB_USERNAME full permissions to the
+# current directory.
+# NB you must first install the Carbon PowerShell module
+#    with choco install -y carbon.
+# TODO set VM screen resolution.
+PowerShell -Command 'Import-Module Carbon; Grant-Permission . $env:VAGRANT_SMB_USERNAME FullControl'
+vagrant up --provider=hyperv
 vagrant ssh
 exit
 vagrant destroy -f

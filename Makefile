@@ -1,10 +1,14 @@
+SHELL=bash
+.SHELLFLAGS=-euo pipefail -c
+
 VERSION=$(shell jq -r .variables.version debian.json)
 
 help:
-	@echo type make build-libvirt, make build-virtualbox, make build-vsphere or make build-esxi
+	@echo type make build-libvirt, make build-virtualbox, make build-hyperv, make build-vsphere or make build-esxi
 
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
 build-virtualbox: debian-${VERSION}-amd64-virtualbox.box
+build-hyperv: debian-${VERSION}-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
 build-esxi: debian-${VERSION}-amd64-esxi.box
 
@@ -23,6 +27,19 @@ debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.json Vag
 	@echo BOX successfully built!
 	@echo to add to local vagrant install do:
 	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-virtualbox.box
+
+debian-${VERSION}-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.json Vagrantfile.template
+	rm -f $@
+	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
+		packer build -only=debian-${VERSION}-amd64-hyperv -on-error=abort -timestamp-ui debian.json
+	@echo BOX successfully built!
+	@echo to add to local vagrant install do:
+	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-hyperv.box
+
+# see https://docs.microsoft.com/en-us/windows-server/virtualization/hyper-v/supported-debian-virtual-machines-on-hyper-v
+tmp/preseed-hyperv.txt: preseed.txt
+	mkdir -p tmp
+	sed -E 's,(d-i pkgsel/include string .+),\1 hyperv-daemons,g' preseed.txt >$@
 
 debian-${VERSION}-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian-vsphere.json Vagrantfile.template dummy-vsphere.box
 	rm -f $@
