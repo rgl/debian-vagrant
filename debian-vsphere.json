@@ -2,7 +2,7 @@
   "variables": {
     "disk_size": "8192",
     "version": "10",
-    "vsphere_iso_url": "[Datastore] iso/debian-10.5.0-amd64-netinst.iso",
+    "vsphere_iso_url": "[Datastore] iso/debian-10.6.0-amd64-netinst.iso",
     "vsphere_host": "vsphere.local",
     "vsphere_username": "administrator@vsphere.local",
     "vsphere_password": "password",
