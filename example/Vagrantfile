@@ -89,6 +89,7 @@ cloud_init_user_data = {
 
 Vagrant.configure(2) do |config|
   config.vm.box = 'debian-10-amd64'
+  #config.vm.box = 'debian-10-uefi-amd64'
 
   config.vm.hostname = 'example.test'
 
@@ -222,6 +223,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision 'shell', inline: "echo \"provisioning user is $(id #{$provision_username})\""
   config.vm.provision 'shell', inline: 'cat /etc/os-release', name: 'os-release'
   config.vm.provision 'shell', inline: 'echo "machine-id is $(cat /etc/machine-id)"'
+  config.vm.provision 'shell', inline: 'echo "machine firmware is $([ -d /sys/firmware/efi ] && echo UEFI || echo BIOS)"', name: 'machine firmware'
   config.vm.provision 'shell', inline: 'cat /etc/debian_version', name: 'debian_version'
   config.vm.provision 'shell', inline: 'sfdisk -l', name: 'disk partitions'
   config.vm.provision 'shell', inline: 'lsblk -x KNAME -o KNAME,SIZE,TRAN,SUBSYSTEMS,FSTYPE,UUID,LABEL,MODEL,SERIAL', name: 'block devices'

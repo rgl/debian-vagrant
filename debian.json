@@ -51,6 +51,43 @@
       "shutdown_command": "echo vagrant | sudo -S poweroff"
     },
     {
+      "name": "debian-{{user `version`}}-uefi-amd64-libvirt",
+      "type": "qemu",
+      "accelerator": "kvm",
+      "qemuargs": [
+        ["-bios", "/usr/share/ovmf/OVMF.fd"],
+        ["-m", "2048"],
+        ["-smp", "2"]
+      ],
+      "headless": true,
+      "http_directory": ".",
+      "format": "qcow2",
+      "disk_size": "{{user `disk_size`}}",
+      "disk_interface": "virtio-scsi",
+      "disk_discard": "unmap",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_timeout": "60m",
+      "boot_wait": "10s",
+      "boot_command": [
+        "c<wait>",
+        "linux /install.amd/vmlinuz",
+        " auto=true",
+        " url={{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
+        " hostname=vagrant",
+        " domain=home",
+        " net.ifnames=0",
+        " BOOT_DEBUG=2",
+        " DEBCONF_DEBUG=5",
+        "<enter>",
+        "initrd /install.amd/initrd.gz<enter>",
+        "boot<enter>"
+      ],
+      "shutdown_command": "echo vagrant | sudo -S poweroff"
+    },
+    {
       "name": "debian-{{user `version`}}-amd64-virtualbox",
       "type": "virtualbox-iso",
       "guest_os_type": "Debian_64",
@@ -163,7 +200,20 @@
     {
       "type": "vagrant",
       "output": "{{.BuildName}}.box",
-      "vagrantfile_template": "Vagrantfile.template"
+      "vagrantfile_template": "Vagrantfile.template",
+      "only": [
+        "debian-{{user `version`}}-amd64-libvirt",
+        "debian-{{user `version`}}-amd64-virtualbox",
+        "debian-{{user `version`}}-amd64-hyperv"
+      ]
+    },
+    {
+      "type": "vagrant",
+      "output": "{{.BuildName}}.box",
+      "vagrantfile_template": "Vagrantfile-uefi.template",
+      "only": [
+        "debian-{{user `version`}}-uefi-amd64-libvirt"
+      ]
     }
   ]
 }

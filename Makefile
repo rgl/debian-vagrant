@@ -4,9 +4,10 @@ SHELL=bash
 VERSION=$(shell jq -r .variables.version debian.json)
 
 help:
-	@echo type make build-libvirt, make build-virtualbox, make build-hyperv, make build-vsphere or make build-esxi
+	@echo type make build-libvirt, make build-uefi-libvirt, make build-virtualbox, make build-hyperv, make build-vsphere or make build-esxi
 
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
+build-uefi-libvirt: debian-${VERSION}-uefi-amd64-libvirt.box
 build-virtualbox: debian-${VERSION}-amd64-virtualbox.box
 build-hyperv: debian-${VERSION}-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
@@ -19,6 +20,14 @@ debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.json Vagran
 	@echo BOX successfully built!
 	@echo to add to local vagrant install do:
 	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-libvirt.box
+
+debian-${VERSION}-uefi-amd64-libvirt.box: preseed.txt provision.sh debian.json Vagrantfile-uefi.template
+	rm -f $@
+	PACKER_KEY_INTERVAL=10ms CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
+		packer build -only=debian-${VERSION}-uefi-amd64-libvirt -on-error=abort -timestamp-ui debian.json
+	@echo BOX successfully built!
+	@echo to add to local vagrant install do:
+	@echo vagrant box add -f debian-${VERSION}-uefi-amd64 debian-${VERSION}-uefi-amd64-libvirt.box
 
 debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.json Vagrantfile.template
 	rm -f $@
@@ -71,4 +80,4 @@ dummy-esxi.box:
 	tar cvf $@ metadata.json
 	rm metadata.json
 
-.PHONY: help buid-libvirt build-virtualbox build-vsphere build-esxi
+.PHONY: help buid-libvirt buid-uefi-libvirt build-virtualbox build-vsphere build-esxi
