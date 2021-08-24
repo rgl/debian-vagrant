@@ -189,7 +189,7 @@ vagrant destroy -f
 
 Download [govc](https://github.com/vmware/govmomi/releases/latest) and place it inside your `/usr/local/bin` directory.
 
-Install the [vsphere vagrant plugin](https://github.com/nsidc/vagrant-vsphere), set your vSphere details, and test the connection to vSphere:
+Set your vSphere details, and test the connection to vSphere:
 
 ```bash
 sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev
@@ -204,6 +204,7 @@ export GOVC_PASSWORD='password'
 export GOVC_DATACENTER='Datacenter'
 export GOVC_CLUSTER='Cluster'
 export GOVC_DATASTORE='Datastore'
+export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/debian-11.0.0-amd64-netinst.iso"
 export VSPHERE_ESXI_HOST='esxi.local'
 export VSPHERE_TEMPLATE_FOLDER='test/templates'
 export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-11-amd64-vsphere"
