@@ -59,6 +59,12 @@ d-i grub-installer/bootdev string default
 d-i grub-installer/only_debian boolean true
 d-i finish-install/reboot_in_progress note
 
+# also install the UEFI bootloader at /boot/efi/EFI/BOOT/BOOTX64.EFI.
+# NB this is needed to support buggy systems like the HP EliteDesk 800 G2 Desktop Mini.
+# NB Ubuntu 20.04 also installs BOOTX64.EFI.
+# see https://wiki.debian.org/UEFI#Force_grub-efi_installation_to_the_removable_media_path
+d-i grub-installer/force-efi-extra-removable boolean true
+
 d-i passwd/root-login boolean false
 d-i passwd/root-password password vagrant
 d-i passwd/root-password-again password vagrant
