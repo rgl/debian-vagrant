@@ -2,8 +2,8 @@
   "variables": {
     "disk_size": "8192",
     "version": "11",
-    "iso_url": "https://cdimage.debian.org/debian-cd/11.3.0/amd64/iso-cd/debian-11.3.0-amd64-netinst.iso",
-    "iso_checksum": "sha256:7892981e1da216e79fb3a1536ce5ebab157afdd20048fe458f2ae34fbc26c19b",
+    "iso_url": "https://cdimage.debian.org/debian-cd/11.4.0/amd64/iso-cd/debian-11.4.0-amd64-netinst.iso",
+    "iso_checksum": "sha256:d490a35d36030592839f24e468a5b818c919943967012037d6ab3d65d030ef7f",
     "esxi_host": "esxi.test",
     "esxi_username": "root",
     "esxi_password": "HeyH0Password!",
