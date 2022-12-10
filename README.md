@@ -171,7 +171,7 @@ vim-cmd vmsvc/getallvms     # list all vms and their id.
 vim-cmd vmsvc/unregister 1  # unregister the vm with id 1.
 ```
 
-**NB** When in doubt see [the packer esx5 driver source](https://github.com/hashicorp/packer/blob/master/builder/vmware/iso/driver_esx5.go).
+**NB** When in doubt see [the packer esx5 driver source](https://github.com/hashicorp/packer-plugin-vmware/blob/main/builder/vmware/common/driver_esx5.go).
 
 Try the example guest:
 
