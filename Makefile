@@ -17,33 +17,25 @@ debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.json Vagran
 	rm -f $@
 	PACKER_KEY_INTERVAL=10ms CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
 		packer build -only=debian-${VERSION}-amd64-libvirt -on-error=abort -timestamp-ui debian.json
-	@echo BOX successfully built!
-	@echo to add to local vagrant install do:
-	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-libvirt.box
+	@./box-metadata.sh libvirt debian-${VERSION}-amd64 $@
 
 debian-${VERSION}-uefi-amd64-libvirt.box: preseed.txt provision.sh debian.json Vagrantfile-uefi.template
 	rm -f $@
 	PACKER_KEY_INTERVAL=10ms CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
 		packer build -only=debian-${VERSION}-uefi-amd64-libvirt -on-error=abort -timestamp-ui debian.json
-	@echo BOX successfully built!
-	@echo to add to local vagrant install do:
-	@echo vagrant box add -f debian-${VERSION}-uefi-amd64 debian-${VERSION}-uefi-amd64-libvirt.box
+	@./box-metadata.sh libvirt debian-${VERSION}-uefi-amd64 $@
 
 debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.json Vagrantfile.template
 	rm -f $@
 	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
 		packer build -only=debian-${VERSION}-amd64-virtualbox -on-error=abort -timestamp-ui debian.json
-	@echo BOX successfully built!
-	@echo to add to local vagrant install do:
-	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-virtualbox.box
+	@./box-metadata.sh virtualbox debian-${VERSION}-amd64 $@
 
 debian-${VERSION}-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.json Vagrantfile.template
 	rm -f $@
 	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
 		packer build -only=debian-${VERSION}-amd64-hyperv -on-error=abort -timestamp-ui debian.json
-	@echo BOX successfully built!
-	@echo to add to local vagrant install do:
-	@echo vagrant box add -f debian-${VERSION}-amd64 debian-${VERSION}-amd64-hyperv.box
+	@./box-metadata.sh hyperv debian-${VERSION}-amd64 $@
 
 # see https://docs.microsoft.com/en-us/windows-server/virtualization/hyper-v/supported-debian-virtual-machines-on-hyper-v
 tmp/preseed-hyperv.txt: preseed.txt
@@ -54,9 +46,7 @@ debian-${VERSION}-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian
 	rm -f $@
 	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
 		packer build -only=debian-${VERSION}-amd64-vsphere -timestamp-ui debian-vsphere.json
-	@echo BOX successfully built!
-	@echo to add to local vagrant install do:
-	@echo vagrant box add -f dummy dummy-vsphere.box
+	@./box-metadata.sh vsphere debian-${VERSION}-amd64 $@
 
 debian-${VERSION}-amd64-esxi.box: preseed.txt provision.sh debian-esxi.json dummy-esxi.box
 	rm -f $@

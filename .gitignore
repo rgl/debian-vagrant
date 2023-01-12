@@ -3,6 +3,7 @@ packer_cache/
 tmp/
 *.tmp
 *.box
+*.box.json
 *.log
 output*
 secrets*
