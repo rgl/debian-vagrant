@@ -48,6 +48,9 @@ apt-get install -y --no-install-recommends cifs-utils
 # install rsync to support rsync synced folders in vagrant.
 apt-get install -y rsync
 
+# add support for mounting iscsi disks and for booting from ibft.
+apt-get install -y open-iscsi
+
 # disable the DNS reverse lookup on the SSH server. this stops it from
 # trying to resolve the client IP address into a DNS domain name, which
 # is kinda slow and does not normally work when running inside VB.
@@ -71,6 +74,9 @@ cat<<"EOF">>/etc/inputrc
 set show-all-if-ambiguous on
 set completion-ignore-case on
 EOF
+
+# reset the iscsi initiator name.
+echo 'GenerateName=yes' >/etc/iscsi/initiatorname.iscsi
 
 # reset the machine-id.
 # NB systemd will re-generate it on the next boot.
