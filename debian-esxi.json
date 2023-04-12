@@ -1,9 +1,9 @@
 {
   "variables": {
     "disk_size": "8192",
-    "version": "11",
-    "iso_url": "https://cdimage.debian.org/debian-cd/11.6.0/amd64/iso-cd/debian-11.6.0-amd64-netinst.iso",
-    "iso_checksum": "sha256:e482910626b30f9a7de9b0cc142c3d4a079fbfa96110083be1d0b473671ce08d",
+    "version": "12",
+    "iso_url": "https://cdimage.debian.org/cdimage/bookworm_di_rc1/amd64/iso-cd/debian-bookworm-DI-rc1-amd64-netinst.iso",
+    "iso_checksum": "sha256:da866b6958096e89200ba73002dd1c45bbbcde65845e129e10df6e0b03ab3884",
     "esxi_host": "esxi.test",
     "esxi_username": "root",
     "esxi_password": "HeyH0Password!",
@@ -54,7 +54,8 @@
         "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
         "/install.amd/vmlinuz initrd=/install.amd/initrd.gz",
         " auto=true",
-        " url={{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
+        " priority=critical",
+        " url=http://{{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
         " hostname=vagrant",
         " domain=home",
         " net.ifnames=0",

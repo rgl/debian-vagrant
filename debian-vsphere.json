@@ -1,7 +1,7 @@
 {
   "variables": {
     "disk_size": "8192",
-    "version": "11",
+    "version": "12",
     "vsphere_iso_url": "{{env `VSPHERE_OS_ISO`}}",
     "vsphere_host": "{{env `GOVC_HOST`}}",
     "vsphere_username": "{{env `GOVC_USERNAME`}}",
@@ -63,7 +63,8 @@
         "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
         "/install.amd/vmlinuz initrd=/install.amd/initrd.gz",
         " auto=true",
-        " url={{.HTTPIP}}:{{.HTTPPort}}/tmp/preseed-vsphere.txt",
+        " priority=critical",
+        " url=http://{{.HTTPIP}}:{{.HTTPPort}}/tmp/preseed-vsphere.txt",
         " hostname=vagrant",
         " domain=home",
         " net.ifnames=0",

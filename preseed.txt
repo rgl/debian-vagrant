@@ -1,5 +1,8 @@
-# disable Predictable Network Interface Names (not supported in Vagrant 1.8.1).
-d-i debian-installer/add-kernel-opts string net.ifnames=0
+# set net.ifnames=0 to disable Predictable Network Interface Names.
+# set iscsi_auto to automatically boot from ibft.
+d-i debian-installer/add-kernel-opts string \
+  net.ifnames=0 \
+  iscsi_auto
 d-i preseed/late_command string \
       for i in 1 2 3; do \
         echo "auto eth$i" >>/target/etc/network/interfaces; \
