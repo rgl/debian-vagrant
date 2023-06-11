@@ -1,7 +1,7 @@
 {
   "variables": {
     "disk_size": "8192",
-    "version": "11",
+    "version": "12",
     "vsphere_iso_url": "{{env `VSPHERE_OS_ISO`}}",
     "vsphere_host": "{{env `GOVC_HOST`}}",
     "vsphere_username": "{{env `GOVC_USERNAME`}}",

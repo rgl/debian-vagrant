@@ -1,6 +1,6 @@
 This builds an up-to-date Vagrant Debian Base Box.
 
-Currently this targets [Debian 11 (Bullseye)](https://www.debian.org/releases/bullseye/).
+Currently this targets [Debian 12 (Bookworm)](https://www.debian.org/releases/bookworm/).
 
 
 # Usage
@@ -204,10 +204,10 @@ export GOVC_PASSWORD='password'
 export GOVC_DATACENTER='Datacenter'
 export GOVC_CLUSTER='Cluster'
 export GOVC_DATASTORE='Datastore'
-export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/debian-11.7.0-amd64-netinst.iso"
+export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/debian-12.0.0-amd64-netinst.iso"
 export VSPHERE_ESXI_HOST='esxi.local'
 export VSPHERE_TEMPLATE_FOLDER='test/templates'
-export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-11-amd64-vsphere"
+export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-12-amd64-vsphere"
 export VSPHERE_VM_FOLDER='test'
 export VSPHERE_VM_NAME='debian-vagrant-example'
 export VSPHERE_VLAN='packer'
@@ -275,5 +275,5 @@ packer during the machine provisioning.
 
 # Reference
 
-* Debian Bullseye [Appendix B. Automating the installation using preseeding](https://www.debian.org/releases/bullseye/amd64/apb.en.html)
-* Debian Bullseye [example-preseed.txt](https://www.debian.org/releases/bullseye/example-preseed.txt)
+* Debian Bookworm [Appendix B. Automating the installation using preseeding](https://www.debian.org/releases/bookworm/amd64/apb.en.html)
+* Debian Bookworm [example-preseed.txt](https://www.debian.org/releases/bookworm/example-preseed.txt)
