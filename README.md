@@ -7,6 +7,7 @@ Currently this targets [Debian 12 (Bookworm)](https://www.debian.org/releases/bo
 
 Install Packer 1.6+ and Vagrant 2.2.9+.
 
+
 ## Ubuntu Host
 
 On a Ubuntu host, install the dependencies by running the file at:
@@ -32,6 +33,7 @@ EOF
 
 For more information see the [Vagrant NFS documentation](https://www.vagrantup.com/docs/synced-folders/nfs.html).
 
+
 ## Windows Host
 
 On a Windows host, install [Chocolatey](https://chocolatey.org/install), then execute the following PowerShell commands in a Administrator PowerShell window:
@@ -52,6 +54,7 @@ exit
 ```
 
 **NB** The commands described in this README should be executed in a mingw64 bash shell.
+
 
 ## qemu-kvm usage
 
@@ -76,6 +79,33 @@ vagrant ssh
 exit
 vagrant destroy -f
 ```
+
+
+## proxmox usage
+
+Install [proxmox](https://www.proxmox.com/en/proxmox-ve).
+
+**NB** This assumes proxmox was installed alike [rgl/proxmox-ve](https://github.com/rgl/proxmox-ve).
+
+Set your proxmox details:
+
+```bash
+cat >secrets-proxmox.sh <<EOF
+export PROXMOX_URL='https://192.168.1.21:8006/api2/json'
+export PROXMOX_USERNAME='root@pam'
+export PROXMOX_PASSWORD='vagrant'
+export PROXMOX_NODE='pve'
+EOF
+source secrets-proxmox.sh
+```
+
+Create the template:
+
+```bash
+make build-proxmox
+```
+
+**NB** There is no way to use the created template with vagrant (the [vagrant-proxmox plugin](https://github.com/telcat/vagrant-proxmox) is no longer compatible with recent vagrant versions). Instead, use packer or terraform.
 
 
 ## VirtualBox usage

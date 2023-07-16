@@ -4,6 +4,7 @@
     "version": "12",
     "iso_url": "https://cdimage.debian.org/debian-cd/12.0.0/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso",
     "iso_checksum": "sha256:3b0e9718e3653435f20d8c2124de6d363a51a1fd7f911b9ca0c6db6b3d30d53e",
+    "proxmox_node": "{{env `PROXMOX_NODE`}}",
     "hyperv_switch_name": "{{env `HYPERV_SWITCH_NAME`}}",
     "hyperv_vlan_id": "{{env `HYPERV_VLAN_ID`}}"
   },
@@ -94,6 +95,64 @@
         "boot<enter>"
       ],
       "shutdown_command": "echo vagrant | sudo -S poweroff"
+    },
+    {
+      "type": "proxmox-iso",
+      "name": "debian-{{user `version`}}-amd64-proxmox",
+      "template_name": "template-debian-{{user `version`}}",
+      "template_description": "See https://github.com/rgl/debian-vagrant",
+      "insecure_skip_tls_verify": true,
+      "node": "{{user `proxmox_node`}}",
+      "machine": "q35",
+      "bios": "ovmf",
+      "efi_config": {
+        "efi_storage_pool": "local-lvm"
+      },
+      "cpu_type": "host",
+      "cores": 2,
+      "memory": 2048,
+      "vga": {
+        "type": "qxl",
+        "memory": 16
+      },
+      "network_adapters": [
+        {
+          "model": "virtio",
+          "bridge": "vmbr0"
+        }
+      ],
+      "scsi_controller": "virtio-scsi-pci",
+      "disks": [
+        {
+          "type": "scsi",
+          "disk_size": "{{user `disk_size`}}M",
+          "storage_pool": "local-lvm"
+        }
+      ],
+      "iso_storage_pool": "local",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "unmount_iso": true,
+      "os": "l26",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_timeout": "60m",
+      "http_directory": ".",
+      "boot_wait": "30s",
+      "boot_command": [
+        "c<wait>",
+        "linux /install.amd/vmlinuz",
+        " auto=true",
+        " url={{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
+        " hostname=vagrant",
+        " domain=home",
+        " net.ifnames=0",
+        " BOOT_DEBUG=2",
+        " DEBCONF_DEBUG=5",
+        "<enter>",
+        "initrd /install.amd/initrd.gz<enter>",
+        "boot<enter>"
+      ]
     },
     {
       "name": "debian-{{user `version`}}-amd64-virtualbox",

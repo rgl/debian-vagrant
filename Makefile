@@ -3,11 +3,17 @@ SHELL=bash
 
 VERSION=$(shell jq -r .variables.version debian.json)
 
+export PROXMOX_URL?=https://192.168.1.21:8006/api2/json
+export PROXMOX_USERNAME?=root@pam
+export PROXMOX_PASSWORD?=vagrant
+export PROXMOX_NODE?=pve
+
 help:
-	@echo type make build-libvirt, make build-uefi-libvirt, make build-virtualbox, make build-hyperv, make build-vsphere or make build-esxi
+	@echo type make build-libvirt, make build-uefi-libvirt, make build-proxmox, make build-virtualbox, make build-hyperv, make build-vsphere or make build-esxi
 
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
 build-uefi-libvirt: debian-${VERSION}-uefi-amd64-libvirt.box
+build-proxmox: debian-${VERSION}-amd64-proxmox.box
 build-virtualbox: debian-${VERSION}-amd64-virtualbox.box
 build-hyperv: debian-${VERSION}-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
@@ -24,6 +30,11 @@ debian-${VERSION}-uefi-amd64-libvirt.box: preseed.txt provision.sh debian.json V
 	PACKER_KEY_INTERVAL=10ms CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
 		packer build -only=debian-${VERSION}-uefi-amd64-libvirt -on-error=abort -timestamp-ui debian.json
 	@./box-metadata.sh libvirt debian-${VERSION}-uefi-amd64 $@
+
+debian-${VERSION}-amd64-proxmox.box: preseed.txt provision.sh debian.json Vagrantfile-uefi.template
+	rm -f $@
+	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
+		packer build -only=debian-${VERSION}-amd64-proxmox -on-error=abort -timestamp-ui debian.json
 
 debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.json Vagrantfile.template
 	rm -f $@
