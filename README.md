@@ -149,8 +149,8 @@ Create the base image in a bash shell with Administrative privileges:
 cat >secrets.sh <<'EOF'
 # set this value when you need to set the VM Switch Name.
 export HYPERV_SWITCH_NAME='Default Switch'
-# set this value when you need to set the VM VLAN ID.
-export HYPERV_VLAN_ID=''
+# set this environment variable when you need to set the VM VLAN ID.
+#export HYPERV_VLAN_ID=''
 # set the credentials that the guest will use
 # to connect to this host smb share.
 # NB you should create a new local user named _vagrant_share

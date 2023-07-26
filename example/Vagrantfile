@@ -129,7 +129,7 @@ Vagrant.configure(2) do |config|
     hv.memory = 2048
     hv.cpus = 2
     hv.enable_virtualization_extensions = true # nested virtualization.
-    hv.vlan_id = ENV['HYPERV_VLAN_ID']
+    hv.vlan_id = ENV['HYPERV_VLAN_ID'] if ENV['HYPERV_VLAN_ID']
     # see https://github.com/hashicorp/vagrant/issues/7915
     # see https://github.com/hashicorp/vagrant/blob/10faa599e7c10541f8b7acf2f8a23727d4d44b6e/plugins/providers/hyperv/action/configure.rb#L21-L35
     config.vm.network :private_network, bridge: ENV['HYPERV_SWITCH_NAME'] if ENV['HYPERV_SWITCH_NAME']
