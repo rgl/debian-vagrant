@@ -25,19 +25,6 @@ popd
 
 # install cloud-init.
 apt-get install -y --no-install-recommends cloud-init cloud-initramfs-growroot
-if [ -n "$(lspci | grep VMware | head -1)" ]; then
-# add support for the vmware vmx guestinfo cloud-init datasource.
-# NB there is plans to include this datasource in the upstream cloud-init project at
-#    https://github.com/vmware/cloud-init-vmware-guestinfo/issues/2 but in the meantime
-#    we are really installing from an internet pipe.
-# see https://github.com/vmware/cloud-init-vmware-guestinfo
-apt-get install -y --no-install-recommends curl python3-pip python3-setuptools python3-wheel python3-dev gcc
-export GIT_REF='v1.4.1'
-wget -qO- https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo/$GIT_REF/install.sh \
-    | bash -x -
-unset GIT_REF
-apt-get remove -y --purge curl python3-dev gcc
-fi
 
 # install the nfs client to support nfs synced folders in vagrant.
 apt-get install -y nfs-common
