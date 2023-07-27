@@ -1,7 +1,7 @@
 SHELL=bash
 .SHELLFLAGS=-euo pipefail -c
 
-VERSION=$(shell jq -r .variables.version debian.json)
+VERSION=12
 
 export PROXMOX_URL?=https://192.168.1.21:8006/api2/json
 export PROXMOX_USERNAME?=root@pam
@@ -19,33 +19,74 @@ build-hyperv: debian-${VERSION}-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
 build-esxi: debian-${VERSION}-amd64-esxi.box
 
-debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.json Vagrantfile.template
+debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile.template
 	rm -f $@
-	PACKER_KEY_INTERVAL=10ms CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-amd64-libvirt -on-error=abort -timestamp-ui debian.json
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian.pkr.hcl
+	PACKER_KEY_INTERVAL=10ms \
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=qemu.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 	@./box-metadata.sh libvirt debian-${VERSION}-amd64 $@
 
-debian-${VERSION}-uefi-amd64-libvirt.box: preseed.txt provision.sh debian.json Vagrantfile-uefi.template
+debian-${VERSION}-uefi-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile-uefi.template
 	rm -f $@
-	PACKER_KEY_INTERVAL=10ms CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-uefi-amd64-libvirt -on-error=abort -timestamp-ui debian.json
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian.pkr.hcl
+	PACKER_KEY_INTERVAL=10ms \
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=qemu.debian-uefi-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 	@./box-metadata.sh libvirt debian-${VERSION}-uefi-amd64 $@
 
-debian-${VERSION}-amd64-proxmox.box: preseed.txt provision.sh debian.json Vagrantfile-uefi.template
+debian-${VERSION}-amd64-proxmox.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile-uefi.template
 	rm -f $@
-	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-amd64-proxmox -on-error=abort -timestamp-ui debian.json
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian.pkr.hcl
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=proxmox-iso.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 
-debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.json Vagrantfile.template
+debian-${VERSION}-amd64-virtualbox.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile.template
 	rm -f $@
-	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-amd64-virtualbox -on-error=abort -timestamp-ui debian.json
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian.pkr.hcl
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=virtualbox-iso.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 	@./box-metadata.sh virtualbox debian-${VERSION}-amd64 $@
 
-debian-${VERSION}-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.json Vagrantfile.template
+debian-${VERSION}-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.pkr.hcl Vagrantfile.template
 	rm -f $@
-	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-amd64-hyperv -on-error=abort -timestamp-ui debian.json
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian.pkr.hcl
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=hyperv-iso.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 	@./box-metadata.sh hyperv debian-${VERSION}-amd64 $@
 
 # see https://docs.microsoft.com/en-us/windows-server/virtualization/hyper-v/supported-debian-virtual-machines-on-hyper-v
@@ -53,32 +94,44 @@ tmp/preseed-hyperv.txt: preseed.txt
 	mkdir -p tmp
 	sed -E 's,(d-i pkgsel/include string .+),\1 hyperv-daemons,g' preseed.txt >$@
 
-debian-${VERSION}-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian-vsphere.json Vagrantfile.template dummy-vsphere.box
+debian-${VERSION}-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian-vsphere.pkr.hcl Vagrantfile.template
 	rm -f $@
-	CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-amd64-vsphere -timestamp-ui debian-vsphere.json
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian-vsphere.pkr.hcl
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=vsphere-iso.debian-amd64 -timestamp-ui debian-vsphere.pkr.hcl
+	echo '{"provider":"vsphere"}' >metadata.json
+	tar cvf $@ metadata.json
+	rm metadata.json
 	@./box-metadata.sh vsphere debian-${VERSION}-amd64 $@
 
-debian-${VERSION}-amd64-esxi.box: preseed.txt provision.sh debian-esxi.json dummy-esxi.box
+debian-${VERSION}-amd64-esxi.box: preseed.txt provision.sh debian-esxi.pkr.hcl
 	rm -f $@
-	PACKER_KEY_INTERVAL=10ms PACKER_ESXI_VNC_PROBE_TIMEOUT=15s CHECKPOINT_DISABLE=1 PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
-		packer build -only=debian-${VERSION}-amd64-esxi -timestamp-ui debian-esxi.json
-	@echo BOX successfully built!
-	@echo to add to local vagrant install do:
-	@echo vagrant box add -f dummy dummy-esxi.box
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian-esxi.pkr.hcl
+	PACKER_KEY_INTERVAL=10ms \
+	PACKER_ESXI_VNC_PROBE_TIMEOUT=15s \
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=vmware-iso.debian-amd64 -timestamp-ui debian-esxi.pkr.hcl
+	echo '{"provider":"vmware_esxi"}' >metadata.json
+	tar cvf $@ metadata.json
+	rm metadata.json
+	@./box-metadata.sh vmware_esxi debian-${VERSION}-amd64 $@
 
 tmp/preseed-vsphere.txt: preseed.txt
 	mkdir -p tmp
 	sed -E 's,(d-i pkgsel/include string .+),\1 open-vm-tools,g' preseed.txt >$@
 
-dummy-vsphere.box:
-	echo '{"provider":"vsphere"}' >metadata.json
-	tar cvf $@ metadata.json
-	rm metadata.json
-
-dummy-esxi.box:
-	echo '{"provider":"vmware_esxi"}' >metadata.json
-	tar cvf $@ metadata.json
-	rm metadata.json
-
-.PHONY: help buid-libvirt buid-uefi-libvirt build-virtualbox build-vsphere build-esxi
+.PHONY: help buid-libvirt buid-uefi-libvirt build-proxmox build-virtualbox build-vsphere build-esxi

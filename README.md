@@ -5,7 +5,7 @@ Currently this targets [Debian 12 (Bookworm)](https://www.debian.org/releases/bo
 
 # Usage
 
-Install Packer 1.6+ and Vagrant 2.2.9+.
+Install Packer 1.9+ and Vagrant 2.3+.
 
 
 ## Ubuntu Host
@@ -146,7 +146,7 @@ PowerShell -Command 'Set-NetFirewallProfile -DisabledInterfaceAliases (Get-NetAd
 Create the base image in a bash shell with Administrative privileges:
 
 ```bash
-cat >secrets.sh <<'EOF'
+cat >secrets-hyperv.sh <<'EOF'
 # set this value when you need to set the VM Switch Name.
 export HYPERV_SWITCH_NAME='Default Switch'
 # set this environment variable when you need to set the VM VLAN ID.
@@ -164,7 +164,7 @@ export VAGRANT_SMB_PASSWORD=''
 # NB execute if the VM fails to obtain an IP address from DHCP.
 PowerShell -Command 'Set-NetFirewallProfile -DisabledInterfaceAliases (Get-NetAdapter -name "vEthernet*" | Where-Object {$_.ifIndex}).InterfaceAlias'
 EOF
-source secrets.sh
+source secrets-hyperv.sh
 make build-hyperv
 ```
 
@@ -224,8 +224,7 @@ Set your vSphere details, and test the connection to vSphere:
 ```bash
 sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev
 vagrant plugin install vagrant-vsphere
-cd example
-cat >secrets.sh <<EOF
+cat >secrets-vsphere.sh <<EOF
 export GOVC_INSECURE='1'
 export GOVC_HOST='vsphere.local'
 export GOVC_URL="https://$GOVC_HOST/sdk"
@@ -237,7 +236,7 @@ export GOVC_DATASTORE='Datastore'
 export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/debian-12.1.0-amd64-netinst.iso"
 export VSPHERE_ESXI_HOST='esxi.local'
 export VSPHERE_TEMPLATE_FOLDER='test/templates'
-export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-12-amd64-vsphere"
+export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-12-amd64"
 export VSPHERE_VM_FOLDER='test'
 export VSPHERE_VM_NAME='debian-vagrant-example'
 export VSPHERE_VLAN='packer'
@@ -251,7 +250,7 @@ export VSPHERE_VLAN='packer'
 export VAGRANT_SMB_USERNAME='_vagrant_share'
 export VAGRANT_SMB_PASSWORD=''
 EOF
-source secrets.sh
+source secrets-vsphere.sh
 # see https://github.com/vmware/govmomi/blob/master/govc/USAGE.md
 govc version
 govc about
@@ -259,16 +258,21 @@ govc datacenter.info # list datacenters
 govc find # find all managed objects
 ```
 
-Download the Debian ISO (you can find the full iso URL in the [debian.json](debian.json) file) and place it inside the datastore as defined by the `vsphere_iso_url` user variable that is inside the [packer template](debian-vsphere.json).
+Download the Debian ISO (you can find the full iso URL in the [debian.pkr.hcl](debian.pkr.hcl) file) and place it inside the datastore as defined by the `vsphere_iso_url` user variable that is inside the [packer template](debian-vsphere.pkr.hcl).
 
 See the [example Vagrantfile](example/Vagrantfile) to see how you could use a cloud-init configuration to configure the VM.
 
-Type `make build-vsphere` and follow the instructions.
+Create the base image:
+
+```bash
+source secrets-vsphere.sh
+make build-vsphere
+```
 
 Try the example guest:
 
 ```bash
-source secrets.sh
+cd example
 vagrant up --provider=vsphere --no-destroy-on-error
 vagrant ssh
 exit
