@@ -23,6 +23,11 @@ packer {
   }
 }
 
+variable "headless" {
+  type    = bool
+  default = true
+}
+
 variable "version" {
   type = string
 }
@@ -51,6 +56,11 @@ variable "proxmox_node" {
   default = env("PROXMOX_NODE")
 }
 
+variable "qemu_accelerator" {
+  type    = string
+  default = "kvm"
+}
+
 variable "hyperv_switch_name" {
   type    = string
   default = env("HYPERV_SWITCH_NAME")
@@ -62,27 +72,34 @@ variable "hyperv_vlan_id" {
 }
 
 source "qemu" "debian-amd64" {
-  accelerator  = "kvm"
+  accelerator  = var.qemu_accelerator
   machine_type = "q35"
   cpus         = 2
   memory       = 2 * 1024
-  qemuargs = [
-    ["-cpu", "host"]
-  ]
-  headless       = true
-  net_device     = "virtio-net"
-  http_directory = "."
-  format         = "qcow2"
-  disk_size      = var.disk_size
-  disk_interface = "virtio-scsi"
-  disk_cache     = "unsafe"
-  disk_discard   = "unmap"
-  iso_url        = var.iso_url
-  iso_checksum   = var.iso_checksum
-  ssh_username   = "vagrant"
-  ssh_password   = "vagrant"
-  ssh_timeout    = "60m"
-  boot_wait      = "5s"
+  qemuargs = concat(
+    [
+      ["-cpu", "host"],
+    ],
+    !var.headless && var.qemu_accelerator == "hvf" ? [
+      ["-display", "cocoa,show-cursor=on"],
+      ["-vga", "virtio"],
+    ] : []
+  )
+  headless            = var.headless
+  use_default_display = !var.headless && var.qemu_accelerator == "hvf" ? true : false
+  net_device          = "virtio-net"
+  http_directory      = "."
+  format              = "qcow2"
+  disk_size           = var.disk_size
+  disk_interface      = "virtio-scsi"
+  disk_cache          = "unsafe"
+  disk_discard        = "unmap"
+  iso_url             = var.iso_url
+  iso_checksum        = var.iso_checksum
+  ssh_username        = "vagrant"
+  ssh_password        = "vagrant"
+  ssh_timeout         = "60m"
+  boot_wait           = "5s"
   boot_command = [
     "<tab>",
     "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
@@ -107,28 +124,35 @@ source "qemu" "debian-amd64" {
 }
 
 source "qemu" "debian-uefi-amd64" {
-  accelerator  = "kvm"
+  accelerator  = var.qemu_accelerator
   machine_type = "q35"
   efi_boot     = true
   cpus         = 2
   memory       = 2 * 1024
-  qemuargs = [
-    ["-cpu", "host"],
-  ]
-  headless       = true
-  net_device     = "virtio-net"
-  http_directory = "."
-  format         = "qcow2"
-  disk_size      = var.disk_size
-  disk_interface = "virtio-scsi"
-  disk_cache     = "unsafe"
-  disk_discard   = "unmap"
-  iso_url        = var.iso_url
-  iso_checksum   = var.iso_checksum
-  ssh_username   = "vagrant"
-  ssh_password   = "vagrant"
-  ssh_timeout    = "60m"
-  boot_wait      = "10s"
+  qemuargs = concat(
+    [
+      ["-cpu", "host"],
+    ],
+    !var.headless && var.qemu_accelerator == "hvf" ? [
+      ["-display", "cocoa,show-cursor=on"],
+      ["-vga", "virtio"],
+    ] : []
+  )
+  headless            = var.headless
+  use_default_display = !var.headless && var.qemu_accelerator == "hvf" ? true : false
+  net_device          = "virtio-net"
+  http_directory      = "."
+  format              = "qcow2"
+  disk_size           = var.disk_size
+  disk_interface      = "virtio-scsi"
+  disk_cache          = "unsafe"
+  disk_discard        = "unmap"
+  iso_url             = var.iso_url
+  iso_checksum        = var.iso_checksum
+  ssh_username        = "vagrant"
+  ssh_password        = "vagrant"
+  ssh_timeout         = "60m"
+  boot_wait           = "10s"
   boot_command = [
     "c<wait>",
     "linux /install.amd/vmlinuz",
@@ -202,7 +226,7 @@ source "proxmox-iso" "debian-amd64" {
 source "virtualbox-iso" "debian-amd64" {
   guest_os_type        = "Debian_64"
   guest_additions_mode = "upload"
-  headless             = true
+  headless             = var.headless
   http_directory       = "."
   vboxmanage = [
     ["modifyvm", "{{.Name}}", "--memory", "2048"],
@@ -248,7 +272,7 @@ source "virtualbox-iso" "debian-amd64" {
 
 source "hyperv-iso" "debian-amd64" {
   temp_path         = "tmp"
-  headless          = true
+  headless          = var.headless
   http_directory    = "."
   generation        = 2
   cpus              = 2

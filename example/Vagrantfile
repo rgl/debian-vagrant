@@ -110,6 +110,25 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder '.', '/vagrant', type: 'nfs', nfs_version: '4.2', nfs_udp: false
   end
 
+  # NB this only works in a macos host.
+  config.vm.provider 'qemu' do |qe, config|
+    qe.qemu_dir = '/usr/local/bin'
+    qe.arch = 'x86_64'
+    qe.machine = 'q35,accel=hvf'
+    qe.cpu = 'host'
+    qe.smp = 'cpus=2,sockets=1,cores=2,threads=1'
+    qe.memory = 2048
+    qe.net_device = 'virtio-net-pci'
+    qe.no_daemonize = true # NB this is required for the vm display.
+    qe.extra_qemu_args = %w(-vga virtio -display cocoa,show-cursor=on)
+    config.ssh.username = 'vagrant'
+    config.ssh.password = 'vagrant'
+    config.vm.synced_folder '.', '/vagrant',
+      type: 'smb',
+      smb_username: ENV['VAGRANT_SMB_USERNAME'] || ENV['USER'],
+      smb_password: ENV['VAGRANT_SMB_PASSWORD']
+  end
+
   config.vm.provider 'virtualbox' do |vb|
     vb.linked_clone = true
     vb.memory = 2048

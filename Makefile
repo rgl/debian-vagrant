@@ -1,7 +1,14 @@
 SHELL=bash
 .SHELLFLAGS=-euo pipefail -c
+UNAME_S:=$(shell uname -s)
 
 VERSION=12
+
+ifeq ($(UNAME_S),Darwin)
+QEMU_ACCELERATOR?=hvf
+else
+QEMU_ACCELERATOR?=kvm
+endif
 
 export PROXMOX_URL?=https://192.168.1.21:8006/api2/json
 export PROXMOX_USERNAME?=root@pam
@@ -29,6 +36,7 @@ debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hcl Vag
 	CHECKPOINT_DISABLE=1 \
 	PACKER_LOG=1 \
 	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_qemu_accelerator=${QEMU_ACCELERATOR} \
 	PKR_VAR_version=${VERSION} \
 	PKR_VAR_vagrant_box=$@ \
 		packer build -only=qemu.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
@@ -43,6 +51,7 @@ debian-${VERSION}-uefi-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hc
 	PACKER_KEY_INTERVAL=10ms \
 	CHECKPOINT_DISABLE=1 \
 	PACKER_LOG=1 PACKER_LOG_PATH=$@.log \
+	PKR_VAR_qemu_accelerator=${QEMU_ACCELERATOR} \
 	PKR_VAR_version=${VERSION} \
 	PKR_VAR_vagrant_box=$@ \
 		packer build -only=qemu.debian-uefi-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
