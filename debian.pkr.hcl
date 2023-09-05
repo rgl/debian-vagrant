@@ -12,12 +12,12 @@ packer {
     }
     # see https://github.com/hashicorp/packer-plugin-virtualbox
     virtualbox = {
-      version = "1.0.4"
+      version = "1.0.5"
       source  = "github.com/hashicorp/virtualbox"
     }
     # see https://github.com/hashicorp/packer-plugin-hyperv
     hyperv = {
-      version = "1.1.0"
+      version = "1.1.1"
       source  = "github.com/hashicorp/hyperv"
     }
   }
@@ -139,9 +139,11 @@ source "qemu" "debian-uefi-amd64" {
     " net.ifnames=0",
     " BOOT_DEBUG=2",
     " DEBCONF_DEBUG=5",
-    "<enter>",
-    "initrd /install.amd/initrd.gz<enter>",
-    "boot<enter>",
+    "<enter><wait5s>",
+    "initrd /install.amd/initrd.gz",
+    "<enter><wait5s>",
+    "boot",
+    "<enter><wait5s>",
   ]
   shutdown_command = "echo vagrant | sudo -S poweroff"
 }
@@ -193,9 +195,11 @@ source "proxmox-iso" "debian-amd64" {
     " net.ifnames=0",
     " BOOT_DEBUG=2",
     " DEBCONF_DEBUG=5",
-    "<enter>",
-    "initrd /install.amd/initrd.gz<enter>",
-    "boot<enter>"
+    "<enter><wait5s>",
+    "initrd /install.amd/initrd.gz",
+    "<enter><wait5s>",
+    "boot",
+    "<enter><wait5s>",
   ]
 }
 
@@ -274,9 +278,11 @@ source "hyperv-iso" "debian-amd64" {
     " net.ifnames=0",
     " BOOT_DEBUG=2",
     " DEBCONF_DEBUG=5",
-    "<enter>",
-    "initrd /install.amd/initrd.gz<enter>",
-    "boot<enter>",
+    "<enter><wait5s>",
+    "initrd /install.amd/initrd.gz",
+    "<enter><wait5s>",
+    "boot",
+    "<enter><wait5s>",
   ]
   shutdown_command = "echo vagrant | sudo -S poweroff"
 }
