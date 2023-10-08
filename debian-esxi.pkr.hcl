@@ -19,12 +19,12 @@ variable "disk_size" {
 
 variable "iso_url" {
   type    = string
-  default = "https://cdimage.debian.org/debian-cd/12.1.0/amd64/iso-cd/debian-12.1.0-amd64-netinst.iso"
+  default = "https://cdimage.debian.org/debian-cd/12.2.0/amd64/iso-cd/debian-12.2.0-amd64-netinst.iso"
 }
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:9f181ae12b25840a508786b1756c6352a0e58484998669288c4eec2ab16b8559"
+  default = "sha256:23ab444503069d9ef681e3028016250289a33cc7bab079259b73100daee0af66"
 }
 
 variable "esxi_host" {
