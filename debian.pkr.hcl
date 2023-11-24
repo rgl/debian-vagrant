@@ -7,7 +7,7 @@ packer {
     }
     # see https://github.com/hashicorp/packer-plugin-proxmox
     proxmox = {
-      version = "1.1.5"
+      version = "1.1.6"
       source  = "github.com/hashicorp/proxmox"
     }
     # see https://github.com/hashicorp/packer-plugin-virtualbox
@@ -151,6 +151,7 @@ source "qemu" "debian-uefi-amd64" {
 source "proxmox-iso" "debian-amd64" {
   template_name            = "template-debian-${var.version}"
   template_description     = "See https://github.com/rgl/debian-vagrant"
+  tags                     = "debian-${var.version};template"
   insecure_skip_tls_verify = true
   node                     = var.proxmox_node
   machine                  = "q35"
