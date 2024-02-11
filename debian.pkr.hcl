@@ -10,11 +10,6 @@ packer {
       version = "1.1.7"
       source  = "github.com/hashicorp/proxmox"
     }
-    # see https://github.com/hashicorp/packer-plugin-virtualbox
-    virtualbox = {
-      version = "1.0.5"
-      source  = "github.com/hashicorp/virtualbox"
-    }
     # see https://github.com/hashicorp/packer-plugin-hyperv
     hyperv = {
       version = "1.1.3"
@@ -207,53 +202,6 @@ source "proxmox-iso" "debian-amd64" {
   ]
 }
 
-source "virtualbox-iso" "debian-amd64" {
-  guest_os_type        = "Debian_64"
-  guest_additions_mode = "upload"
-  headless             = true
-  http_directory       = "."
-  vboxmanage = [
-    ["modifyvm", "{{.Name}}", "--memory", "2048"],
-    ["modifyvm", "{{.Name}}", "--cpus", "2"],
-    ["modifyvm", "{{.Name}}", "--vram", "32"],
-    ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
-    ["modifyvm", "{{.Name}}", "--nictype2", "virtio"],
-    ["modifyvm", "{{.Name}}", "--nictype3", "virtio"],
-    ["modifyvm", "{{.Name}}", "--nictype4", "virtio"],
-  ]
-  disk_size            = var.disk_size
-  hard_drive_interface = "sata"
-  hard_drive_discard   = true
-  iso_url              = var.iso_url
-  iso_checksum         = var.iso_checksum
-  ssh_username         = "vagrant"
-  ssh_password         = "vagrant"
-  ssh_timeout          = "60m"
-  boot_wait            = "5s"
-  boot_command = [
-    "<tab>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "/install.amd/vmlinuz initrd=/install.amd/initrd.gz",
-    " auto=true",
-    " url={{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
-    " hostname=vagrant",
-    " domain=home",
-    " net.ifnames=0",
-    " BOOT_DEBUG=2",
-    " DEBCONF_DEBUG=5",
-    "<enter>"
-  ]
-  shutdown_command    = "echo vagrant | sudo -S poweroff"
-  post_shutdown_delay = "2m"
-}
-
 source "hyperv-iso" "debian-amd64" {
   temp_path         = "tmp"
   headless          = true
@@ -296,7 +244,6 @@ build {
     "source.qemu.debian-amd64",
     "source.qemu.debian-uefi-amd64",
     "source.proxmox-iso.debian-amd64",
-    "source.virtualbox-iso.debian-amd64",
     "source.hyperv-iso.debian-amd64",
   ]
 
@@ -326,7 +273,6 @@ build {
     only = [
       "qemu.debian-amd64",
       "hyperv-iso.debian-amd64",
-      "virtualbox-iso.debian-amd64",
     ]
     output               = var.vagrant_box
     vagrantfile_template = "Vagrantfile.template"

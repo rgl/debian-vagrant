@@ -39,7 +39,6 @@ For more information see the [Vagrant NFS documentation](https://www.vagrantup.c
 On a Windows host, install [Chocolatey](https://chocolatey.org/install), then execute the following PowerShell commands in a Administrator PowerShell window:
 
 ```powershell
-choco install -y virtualbox --params "/NoDesktopShortcut /ExtensionPack"
 choco install -y packer vagrant jq msys2
 ```
 
@@ -106,23 +105,6 @@ make build-proxmox
 ```
 
 **NB** There is no way to use the created template with vagrant (the [vagrant-proxmox plugin](https://github.com/telcat/vagrant-proxmox) is no longer compatible with recent vagrant versions). Instead, use packer (e.g. see this repository) or terraform (e.g. see [rgl/terraform-proxmox-debian-example](https://github.com/rgl/terraform-proxmox-debian-example)).
-
-
-## VirtualBox usage
-
-Install [VirtuaBox](https://www.virtualbox.org/).
-
-Type `make build-virtualbox` and follow the instructions.
-
-Try the example guest:
-
-```bash
-cd example
-vagrant up --provider=virtualbox --no-destroy-on-error
-vagrant ssh
-exit
-vagrant destroy -f
-```
 
 
 ## Hyper-V usage
