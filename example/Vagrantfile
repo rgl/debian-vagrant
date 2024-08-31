@@ -152,34 +152,6 @@ Vagrant.configure(2) do |config|
     end
   end
 
-  config.vm.provider 'vmware_esxi' do |esxi, config|
-    esxi.clone_from_vm = 'debian-12-amd64'
-    esxi.esxi_hostname = 'esxi.test'
-    esxi.esxi_username = 'root'
-    esxi.esxi_password = 'HeyH0Password!'
-    esxi.esxi_disk_store = 'datastore1'
-    esxi.esxi_virtual_network = ['VM Network']
-    esxi.guest_memsize = $vm_memory
-    esxi.guest_numvcpus = $vm_cpus
-    # NB the extra_config data ends-up inside the VM .vmx file.
-    # NB the guestinfo properties will be exposed by cloud-init-vmware-guestinfo
-    #    as a cloud-init datasource.
-    # See https://github.com/vmware/cloud-init-vmware-guestinfo
-    esxi.guest_custom_vmx_settings = [
-      [
-        'guestinfo.metadata',
-        gzip_base64({
-          'network' => gzip_base64(cloud_init_network_config.to_json),
-          'network.encoding' => 'gzip+base64',
-        }.to_json)
-      ],
-      ['guestinfo.metadata.encoding', 'gzip+base64'],
-      ['guestinfo.userdata', gzip_base64("#cloud-config\n#{cloud_init_user_data.to_json}")],
-      ['guestinfo.userdata.encoding', 'gzip+base64'],
-    ]
-    config.vm.synced_folder '.', '/vagrant', type: 'nfs', nfs_version: '4.2', nfs_udp: false
-  end
-
   config.vm.provider 'vsphere' do |vsphere, override|
     vsphere.name = ENV['VSPHERE_VM_NAME']
     vsphere.notes = "Created from #{__FILE__}"

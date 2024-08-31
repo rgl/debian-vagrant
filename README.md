@@ -169,34 +169,6 @@ vagrant destroy -f
 ```
 
 
-## ESXi usage
-
-[Install ESXi and ovftool](README-esxi.md).
-
-Type `make build-esxi` and follow the instructions.
-
-**NB** If this messes up, you might need to manually unregister the failed VM with, e.g.:
-
-```bash
-ssh root@esxi.test          # ssh into the esxi host.
-vim-cmd vmsvc/getallvms     # list all vms and their id.
-vim-cmd vmsvc/unregister 1  # unregister the vm with id 1.
-```
-
-**NB** When in doubt see [the packer esx5 driver source](https://github.com/hashicorp/packer-plugin-vmware/blob/main/builder/vmware/common/driver_esx5.go).
-
-Try the example guest:
-
-```bash
-cd example
-vagrant plugin install vagrant-vmware-esxi # see https://github.com/josenk/vagrant-vmware-esxi
-vagrant up --provider=vmware_esxi --no-destroy-on-error
-vagrant ssh
-exit
-vagrant destroy -f
-```
-
-
 ## VMware vSphere usage
 
 Download [govc](https://github.com/vmware/govmomi/releases/latest) and place it inside your `/usr/local/bin` directory.

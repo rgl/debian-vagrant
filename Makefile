@@ -9,14 +9,13 @@ export PROXMOX_PASSWORD?=vagrant
 export PROXMOX_NODE?=pve
 
 help:
-	@echo type make build-libvirt, make build-uefi-libvirt, make build-proxmox, make build-hyperv, make build-vsphere or make build-esxi
+	@echo type make build-libvirt, make build-uefi-libvirt, make build-proxmox, make build-hyperv, or make build-vsphere
 
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
 build-uefi-libvirt: debian-${VERSION}-uefi-amd64-libvirt.box
 build-proxmox: debian-${VERSION}-amd64-proxmox.box
 build-hyperv: debian-${VERSION}-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
-build-esxi: debian-${VERSION}-amd64-esxi.box
 
 debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile.template
 	rm -f $@
@@ -96,27 +95,8 @@ debian-${VERSION}-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian
 	rm metadata.json
 	@./box-metadata.sh vsphere debian-${VERSION}-amd64 $@
 
-debian-${VERSION}-amd64-esxi.box: preseed.txt provision.sh debian-esxi.pkr.hcl
-	rm -f $@
-	CHECKPOINT_DISABLE=1 \
-	PACKER_LOG=1 \
-	PACKER_LOG_PATH=$@.init.log \
-		packer init debian-esxi.pkr.hcl
-	PACKER_KEY_INTERVAL=10ms \
-	PACKER_ESXI_VNC_PROBE_TIMEOUT=15s \
-	CHECKPOINT_DISABLE=1 \
-	PACKER_LOG=1 \
-	PACKER_LOG_PATH=$@.log \
-	PKR_VAR_version=${VERSION} \
-	PKR_VAR_vagrant_box=$@ \
-		packer build -only=vmware-iso.debian-amd64 -timestamp-ui debian-esxi.pkr.hcl
-	echo '{"provider":"vmware_esxi"}' >metadata.json
-	tar cvf $@ metadata.json
-	rm metadata.json
-	@./box-metadata.sh vmware_esxi debian-${VERSION}-amd64 $@
-
 tmp/preseed-vsphere.txt: preseed.txt
 	mkdir -p tmp
 	sed -E 's,(d-i pkgsel/include string .+),\1 open-vm-tools,g' preseed.txt >$@
 
-.PHONY: help buid-libvirt buid-uefi-libvirt build-proxmox build-vsphere build-esxi
+.PHONY: help buid-libvirt buid-uefi-libvirt build-proxmox build-vsphere
