@@ -7,7 +7,7 @@ packer {
     }
     # see https://github.com/hashicorp/packer-plugin-proxmox
     proxmox = {
-      version = "1.1.8"
+      version = "1.2.0"
       source  = "github.com/hashicorp/proxmox"
     }
     # see https://github.com/hashicorp/packer-plugin-hyperv
@@ -178,17 +178,22 @@ source "proxmox-iso" "debian-amd64" {
     discard      = true
     disk_size    = "${var.disk_size}M"
     storage_pool = "local-lvm"
+    format       = "raw"
   }
-  iso_storage_pool = "local"
-  iso_url          = var.iso_url
-  iso_checksum     = var.iso_checksum
-  unmount_iso      = true
-  os               = "l26"
-  ssh_username     = "vagrant"
-  ssh_password     = "vagrant"
-  ssh_timeout      = "60m"
-  http_directory   = "."
-  boot_wait        = "30s"
+  boot_iso {
+    type             = "scsi"
+    iso_storage_pool = "local"
+    iso_url          = var.iso_url
+    iso_checksum     = var.iso_checksum
+    iso_download_pve = true
+    unmount          = true
+  }
+  os             = "l26"
+  ssh_username   = "vagrant"
+  ssh_password   = "vagrant"
+  ssh_timeout    = "60m"
+  http_directory = "."
+  boot_wait      = "30s"
   boot_command = [
     "c<wait>",
     "linux /install.amd/vmlinuz",
