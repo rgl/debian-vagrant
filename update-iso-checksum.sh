@@ -1,7 +1,7 @@
 #!/bin/bash
 # this will update the debian.pkr.hcl file with the current netboot image checksum.
 # see https://www.debian.org/CD/verify
-# see https://cdimage.debian.org/debian-cd/12.9.0/amd64/iso-cd/
+# see https://cdimage.debian.org/debian-cd/12.10.0/amd64/iso-cd/
 set -eux
 iso_url="$(perl -ne '/default\s*=\s*\"(https:.+\.debian\.org.+)\"/ && print $1' <debian.pkr.hcl)"
 iso_checksum_url="$(dirname $iso_url)/SHA256SUMS"
