@@ -150,7 +150,13 @@ source "qemu" "debian-uefi-amd64" {
 
 source "proxmox-iso" "debian-amd64" {
   template_name            = "template-debian-${var.version}"
-  template_description     = "See https://github.com/rgl/debian-vagrant"
+  template_description     = <<-EOS
+                              See https://github.com/rgl/debian-vagrant
+
+                              ```
+                              Build At: ${timestamp()}
+                              ```
+                              EOS
   tags                     = "debian-${var.version};template"
   insecure_skip_tls_verify = true
   node                     = var.proxmox_node
