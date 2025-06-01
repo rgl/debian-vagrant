@@ -1,3 +1,5 @@
+[![Lint](https://github.com/rgl/debian-vagrant/actions/workflows/lint.yml/badge.svg)](https://github.com/rgl/debian-vagrant/actions/workflows/lint.yml)
+
 This builds an up-to-date Vagrant Debian Base Box.
 
 Currently this targets [Debian 12 (Bookworm)](https://www.debian.org/releases/bookworm/).
@@ -19,6 +21,11 @@ Depending on your hypervisor, follow its instructions:
 * [Hyper-V usage](#hyper-v-usage)
 * [VMware vSphere usage](#vmware-vsphere-usage)
 
+Lint the the source-code:
+
+```bash
+./mega-linter.sh
+```
 
 ## Ubuntu Host
 
