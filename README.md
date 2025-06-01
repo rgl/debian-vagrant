@@ -7,6 +7,18 @@ Currently this targets [Debian 12 (Bookworm)](https://www.debian.org/releases/bo
 
 Install Packer 1.9+ and Vagrant 2.3+.
 
+Depending on your host, follow its instructions:
+
+* [Ubuntu Host](#ubuntu-host)
+* [Windows Host](#windows-host)
+
+Depending on your hypervisor, follow its instructions:
+
+* [QEMU-KVM usage](#qemu-kvm-usage)
+* [Proxmox VE usage](#proxmox-ve-usage)
+* [Hyper-V usage](#hyper-v-usage)
+* [VMware vSphere usage](#vmware-vsphere-usage)
+
 
 ## Ubuntu Host
 
@@ -55,7 +67,7 @@ exit
 **NB** The commands described in this README should be executed in a mingw64 bash shell.
 
 
-## qemu-kvm usage
+## QEMU-KVM usage
 
 Install qemu-kvm:
 
@@ -80,9 +92,9 @@ vagrant destroy -f
 ```
 
 
-## proxmox usage
+## Proxmox VE usage
 
-Install [proxmox](https://www.proxmox.com/en/proxmox-ve).
+Install [Proxmox VE](https://www.proxmox.com/en/proxmox-ve).
 
 **NB** This assumes proxmox was installed alike [rgl/proxmox-ve](https://github.com/rgl/proxmox-ve).
 
