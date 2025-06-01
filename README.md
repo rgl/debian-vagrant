@@ -1,3 +1,5 @@
+# About
+
 [![Lint](https://github.com/rgl/debian-vagrant/actions/workflows/lint.yml/badge.svg)](https://github.com/rgl/debian-vagrant/actions/workflows/lint.yml)
 
 This builds an up-to-date Vagrant Debian Base Box.
@@ -5,7 +7,7 @@ This builds an up-to-date Vagrant Debian Base Box.
 Currently this targets [Debian 12 (Bookworm)](https://www.debian.org/releases/bookworm/).
 
 
-# Usage
+## Usage
 
 Install Packer 1.9+ and Vagrant 2.3+.
 
@@ -27,11 +29,12 @@ Lint the the source-code:
 ./mega-linter.sh
 ```
 
-## Ubuntu Host
+
+### Ubuntu Host
 
 On a Ubuntu host, install the dependencies by running the file at:
 
-    https://github.com/rgl/xfce-desktop-vagrant/blob/master/provision-virtualization-tools.sh
+[rgl/xfce-desktop-vagrant//provision-virtualization-tools.sh](https://github.com/rgl/xfce-desktop-vagrant/blob/master/provision-virtualization-tools.sh)
 
 And you should also install and configure the NFS server. E.g.:
 
@@ -53,7 +56,7 @@ EOF
 For more information see the [Vagrant NFS documentation](https://www.vagrantup.com/docs/synced-folders/nfs.html).
 
 
-## Windows Host
+### Windows Host
 
 On a Windows host, install [Chocolatey](https://chocolatey.org/install), then execute the following PowerShell commands in a Administrator PowerShell window:
 
@@ -74,7 +77,7 @@ exit
 **NB** The commands described in this README should be executed in a mingw64 bash shell.
 
 
-## QEMU-KVM usage
+### QEMU-KVM usage
 
 Install qemu-kvm:
 
@@ -99,7 +102,7 @@ vagrant destroy -f
 ```
 
 
-## Proxmox VE usage
+### Proxmox VE usage
 
 Install [Proxmox VE](https://www.proxmox.com/en/proxmox-ve).
 
@@ -126,7 +129,7 @@ make build-proxmox
 **NB** There is no way to use the created template with vagrant (the [vagrant-proxmox plugin](https://github.com/telcat/vagrant-proxmox) is no longer compatible with recent vagrant versions). Instead, use packer (e.g. see this repository) or terraform (e.g. see [rgl/terraform-proxmox-debian-example](https://github.com/rgl/terraform-proxmox-debian-example)).
 
 
-## Hyper-V usage
+### Hyper-V usage
 
 Install [Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)
 and also install the `Windows Sandbox` feature (for some reason,
@@ -188,7 +191,7 @@ vagrant destroy -f
 ```
 
 
-## VMware vSphere usage
+### VMware vSphere usage
 
 Download [govc](https://github.com/vmware/govmomi/releases/latest) and place it inside your `/usr/local/bin` directory.
 
@@ -253,7 +256,7 @@ vagrant destroy -f
 ```
 
 
-# Preseed
+## Preseed
 
 The debian installation iso uses the
 [debian installer](https://wiki.debian.org/DebianInstaller) (aka d-i) to
@@ -280,7 +283,7 @@ kernel command line `url` argument. Which will be a http address served by
 packer during the machine provisioning.
 
 
-# Reference
+## Reference
 
 * Debian Bookworm [Appendix B. Automating the installation using preseeding](https://www.debian.org/releases/bookworm/amd64/apb.en.html)
 * Debian Bookworm [example-preseed.txt](https://www.debian.org/releases/bookworm/example-preseed.txt)
