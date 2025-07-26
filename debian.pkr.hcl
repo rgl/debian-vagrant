@@ -38,12 +38,12 @@ variable "disk_size" {
 
 variable "iso_url" {
   type    = string
-  default = "https://cdimage.debian.org/debian-cd/12.11.0/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso"
+  default = "https://cdimage.debian.org/cdimage/trixie_di_rc2/amd64/iso-cd/debian-trixie-DI-rc2-amd64-netinst.iso"
 }
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:30ca12a15cae6a1033e03ad59eb7f66a6d5a258dcf27acd115c2bd42d22640e8"
+  default = "sha256:8fe01c108a8a7704687c0f50abc1d936aef7c366ebb3dc47a49e0467832a49ea"
 }
 
 variable "proxmox_node" {
