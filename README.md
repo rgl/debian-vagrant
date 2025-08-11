@@ -4,7 +4,7 @@
 
 This builds an up-to-date Vagrant Debian Base Box.
 
-Currently this targets [Debian 12 (Bookworm)](https://www.debian.org/releases/bookworm/).
+Currently this targets [Debian 13 (Trixie)](https://www.debian.org/releases/trixie/).
 
 
 ## Usage
@@ -216,10 +216,10 @@ export GOVC_PASSWORD='password'
 export GOVC_DATACENTER='Datacenter'
 export GOVC_CLUSTER='Cluster'
 export GOVC_DATASTORE='Datastore'
-export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/debian-12.11.0-amd64-netinst.iso"
+export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/debian-13.0.0-amd64-netinst.iso"
 export VSPHERE_ESXI_HOST='esxi.local'
 export VSPHERE_TEMPLATE_FOLDER='test/templates'
-export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-12-amd64"
+export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-13-amd64"
 export VSPHERE_VM_FOLDER='test'
 export VSPHERE_VM_NAME='debian-vagrant-example'
 export VSPHERE_VLAN='packer'
@@ -292,5 +292,5 @@ packer during the machine provisioning.
 
 ## Reference
 
-* Debian Bookworm [Appendix B. Automating the installation using preseeding](https://www.debian.org/releases/bookworm/amd64/apb.en.html)
-* Debian Bookworm [example-preseed.txt](https://www.debian.org/releases/bookworm/example-preseed.txt)
+* Debian Trixie [Appendix B. Automating the installation using preseeding](https://www.debian.org/releases/trixie/amd64/apb.en.html)
+* Debian Trixie [example-preseed.txt](https://www.debian.org/releases/trixie/example-preseed.txt)

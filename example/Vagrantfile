@@ -57,22 +57,34 @@ def create_cloud_init_iso_trigger(config, provider_name, group, cloud_init_user_
 end
 
 cloud_init_network_config = {
-  # Uncomment these properties to configure a static IP address.
-  # 'version' => 2,
-  # 'ethernets' => {
-  #   'eth0' => {
-  #     'dhcp4' => false,
-  #     'addresses' => [
-  #       '10.0.0.123/24',
-  #     ],
-  #     'gateway4' => '10.0.0.1',
-  #     'nameservers' => {
-  #       'addresses' => [
-  #         '10.0.0.1',
-  #       ],
-  #     },
-  #   },
-  # },
+  'version' => 2,
+  'ethernets' => {
+    'eth0' => {
+      'dhcp4' => true,
+      # Uncomment these properties to configure a static IP address.
+      # 'dhcp4' => false,
+      # 'addresses' => [
+      #   '10.0.0.123/24',
+      # ],
+      # 'gateway4' => '10.0.0.1',
+      # 'nameservers' => {
+      #   'addresses' => [
+      #     '10.0.0.1',
+      #   ],
+      # },
+      # NB in debian trixie (13) setting dhcp6 to false does not actually disable ipv6,
+      #    it just prevents cloud-init from adding the iface eth0 inet6 dhcp line to the
+      #    /etc/network/interfaces.d/50-cloud-init file. that inet6 ifupdown method no
+      #    longer works in debian trixie (13) because it expects to find the dhclient
+      #    binary which no longer exists by default (the isc-dhcp-client package is
+      #    deprecated, and is no longer installed by default; it was replaced by the
+      #    dhcpcd-base package, which provides the dhcpcd binary).
+      #    see https://packages.debian.org/trixie/isc-dhcp-client
+      #    see https://packages.debian.org/trixie/dhcpcd-base
+      #    see https://packages.debian.org/trixie/ifupdown
+      'dhcp6' => false,
+    },
+  },
 }
 
 cloud_init_user_data = {
@@ -91,8 +103,8 @@ cloud_init_user_data = {
 }
 
 Vagrant.configure(2) do |config|
-  config.vm.box = 'debian-12-amd64'
-  #config.vm.box = 'debian-12-uefi-amd64'
+  config.vm.box = 'debian-13-amd64'
+  #config.vm.box = 'debian-13-uefi-amd64'
 
   config.vm.hostname = 'example.test'
 
