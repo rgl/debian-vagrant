@@ -60,7 +60,7 @@ Cmnd_Alias VAGRANT_NFSD_APPLY = /usr/sbin/exportfs -ar
 EOF
 ```
 
-For more information see the [Vagrant NFS documentation](https://www.vagrantup.com/docs/synced-folders/nfs.html).
+For more information see the [Vagrant NFS documentation](https://developer.hashicorp.com/vagrant/docs/synced-folders/nfs).
 
 
 ### Windows Host
