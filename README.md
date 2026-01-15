@@ -9,7 +9,7 @@ Currently this targets [Debian 13 (Trixie)](https://www.debian.org/releases/trix
 
 ## Usage
 
-Install Packer 1.9+ and Vagrant 2.3+.
+Install Packer 1.14+ and Vagrant 2.4+.
 
 Depending on your host, follow its instructions:
 
