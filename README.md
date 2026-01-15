@@ -11,6 +11,13 @@ Currently this targets [Debian 13 (Trixie)](https://www.debian.org/releases/trix
 
 Install Packer 1.14+ and Vagrant 2.4+.
 
+If your host has multiple IP addresses, you might need to set the
+`PACKER_HTTP_BIND_ADDRESS` environment variable, e.g.:
+
+```bash
+export PACKER_HTTP_BIND_ADDRESS='192.168.8.11'
+```
+
 Depending on your host, follow its instructions:
 
 * [Ubuntu Host](#ubuntu-host)
@@ -119,6 +126,7 @@ Set your proxmox details:
 
 ```bash
 cat >secrets-proxmox.sh <<EOF
+#export PACKER_HTTP_BIND_ADDRESS='192.168.8.11'
 export PROXMOX_URL='https://192.168.1.21:8006/api2/json'
 export PROXMOX_USERNAME='root@pam'
 export PROXMOX_PASSWORD='vagrant'
@@ -208,6 +216,7 @@ Set your vSphere details, and test the connection to vSphere:
 sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev
 vagrant plugin install vagrant-vsphere
 cat >secrets-vsphere.sh <<EOF
+#export PACKER_HTTP_BIND_ADDRESS='192.168.8.11'
 export GOVC_INSECURE='1'
 export GOVC_HOST='vsphere.local'
 export GOVC_URL="https://$GOVC_HOST/sdk"

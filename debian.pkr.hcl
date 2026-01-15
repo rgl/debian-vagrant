@@ -23,6 +23,11 @@ packer {
   }
 }
 
+variable "http_bind_address" {
+  type    = string
+  default = env("PACKER_HTTP_BIND_ADDRESS")
+}
+
 variable "version" {
   type = string
 }
@@ -69,20 +74,21 @@ source "qemu" "debian-amd64" {
   qemuargs = [
     ["-cpu", "host"]
   ]
-  headless       = true
-  net_device     = "virtio-net"
-  http_directory = "."
-  format         = "qcow2"
-  disk_size      = var.disk_size
-  disk_interface = "virtio-scsi"
-  disk_cache     = "unsafe"
-  disk_discard   = "unmap"
-  iso_url        = var.iso_url
-  iso_checksum   = var.iso_checksum
-  ssh_username   = "vagrant"
-  ssh_password   = "vagrant"
-  ssh_timeout    = "60m"
-  boot_wait      = "5s"
+  headless          = true
+  net_device        = "virtio-net"
+  http_bind_address = var.http_bind_address
+  http_directory    = "."
+  format            = "qcow2"
+  disk_size         = var.disk_size
+  disk_interface    = "virtio-scsi"
+  disk_cache        = "unsafe"
+  disk_discard      = "unmap"
+  iso_url           = var.iso_url
+  iso_checksum      = var.iso_checksum
+  ssh_username      = "vagrant"
+  ssh_password      = "vagrant"
+  ssh_timeout       = "60m"
+  boot_wait         = "5s"
   boot_command = [
     "<tab>",
     "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
@@ -117,20 +123,21 @@ source "qemu" "debian-uefi-amd64" {
   qemuargs = [
     ["-cpu", "host"],
   ]
-  headless       = true
-  net_device     = "virtio-net"
-  http_directory = "."
-  format         = "qcow2"
-  disk_size      = var.disk_size
-  disk_interface = "virtio-scsi"
-  disk_cache     = "unsafe"
-  disk_discard   = "unmap"
-  iso_url        = var.iso_url
-  iso_checksum   = var.iso_checksum
-  ssh_username   = "vagrant"
-  ssh_password   = "vagrant"
-  ssh_timeout    = "60m"
-  boot_wait      = "10s"
+  headless          = true
+  net_device        = "virtio-net"
+  http_bind_address = var.http_bind_address
+  http_directory    = "."
+  format            = "qcow2"
+  disk_size         = var.disk_size
+  disk_interface    = "virtio-scsi"
+  disk_cache        = "unsafe"
+  disk_discard      = "unmap"
+  iso_url           = var.iso_url
+  iso_checksum      = var.iso_checksum
+  ssh_username      = "vagrant"
+  ssh_password      = "vagrant"
+  ssh_timeout       = "60m"
+  boot_wait         = "10s"
   boot_command = [
     "c<wait>",
     "linux /install.amd/vmlinuz",
@@ -196,12 +203,13 @@ source "proxmox-iso" "debian-amd64" {
     iso_download_pve = true
     unmount          = true
   }
-  os             = "l26"
-  ssh_username   = "vagrant"
-  ssh_password   = "vagrant"
-  ssh_timeout    = "60m"
-  http_directory = "."
-  boot_wait      = "30s"
+  os                = "l26"
+  ssh_username      = "vagrant"
+  ssh_password      = "vagrant"
+  ssh_timeout       = "60m"
+  http_bind_address = var.http_bind_address
+  http_directory    = "."
+  boot_wait         = "30s"
   boot_command = [
     "c<wait>",
     "linux /install.amd/vmlinuz",
@@ -223,6 +231,7 @@ source "proxmox-iso" "debian-amd64" {
 source "hyperv-iso" "debian-amd64" {
   temp_path         = "tmp"
   headless          = true
+  http_bind_address = var.http_bind_address
   http_directory    = "."
   generation        = 2
   cpus              = 2
