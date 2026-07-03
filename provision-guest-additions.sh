@@ -4,9 +4,12 @@ set -eux
 # install the Guest Additions.
 if [ -n "$(lspci | grep 'Red Hat' | head -1)" ]; then
 # install the qemu-kvm Guest Additions.
+# see https://packages.debian.org/trixie/qemu-guest-agent
+# see https://packages.debian.org/trixie/spice-vdagent
 apt-get install -y qemu-guest-agent spice-vdagent
 elif [ -n "$(lspci | grep VMware | head -1)" ]; then
 # install the VMware Guest Additions.
+# see https://packages.debian.org/trixie/open-vm-tools
 apt-get install -y open-vm-tools
 elif [ "$(cat /sys/devices/virtual/dmi/id/sys_vendor)" == 'Microsoft Corporation' ]; then
 # no need to install the Hyper-V Guest Additions (aka Linux Integration Services)

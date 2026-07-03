@@ -74,6 +74,7 @@ debian-${VERSION}-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.p
 	@./box-metadata.sh hyperv debian-${VERSION}-amd64 $@
 
 # see https://docs.microsoft.com/en-us/windows-server/virtualization/hyper-v/supported-debian-virtual-machines-on-hyper-v
+# see https://packages.debian.org/trixie/hyperv-daemons
 tmp/preseed-hyperv.txt: preseed.txt
 	mkdir -p tmp
 	sed -E 's,(d-i pkgsel/include string .+),\1 hyperv-daemons,g' preseed.txt >$@
@@ -95,6 +96,7 @@ debian-${VERSION}-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian
 	rm metadata.json
 	@./box-metadata.sh vsphere debian-${VERSION}-amd64 $@
 
+# see https://packages.debian.org/trixie/open-vm-tools
 tmp/preseed-vsphere.txt: preseed.txt
 	mkdir -p tmp
 	sed -E 's,(d-i pkgsel/include string .+),\1 open-vm-tools,g' preseed.txt >$@
