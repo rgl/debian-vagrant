@@ -58,17 +58,24 @@ def create_cloud_init_iso_trigger(config, provider_name, group, cloud_init_user_
   cloud_init_data_path
 end
 
+# see https://docs.cloud-init.io/en/25.1/reference/network-config.html
+# see https://docs.cloud-init.io/en/25.1/reference/network-config-format-v2.html
 cloud_init_network_config = {
   'version' => 2,
   'ethernets' => {
     'eth0' => {
       'dhcp4' => true,
-      # Uncomment these properties to configure a static IP address.
+      # NB uncomment these properties to configure a static IP address.
       # 'dhcp4' => false,
       # 'addresses' => [
       #   '10.0.0.123/24',
       # ],
-      # 'gateway4' => '10.0.0.1',
+      # 'routes' => [
+      #   {
+      #     'to' => '0.0.0.0/0',
+      #     'via' => '10.0.0.1',
+      #   },
+      # ],
       # 'nameservers' => {
       #   'addresses' => [
       #     '10.0.0.1',
@@ -89,6 +96,9 @@ cloud_init_network_config = {
   },
 }
 
+# see https://docs.cloud-init.io/en/25.1/explanation/format.html
+# see https://docs.cloud-init.io/en/25.1/reference/cloud-config.html
+# see https://docs.cloud-init.io/en/25.1/reference/modules.html
 cloud_init_user_data = {
   # modify the provisioning user credentials.
   'users' => [
@@ -204,6 +214,7 @@ Vagrant.configure(2) do |config|
     end
   end
 
+  config.vm.provision 'shell', inline: 'cloud-init schema --system --annotate', name: 'validate cloud-init schema'
   config.vm.provision 'shell', inline: 'cloud-init status --long --wait', name: 'wait for cloud-init to finish'
   config.vm.provision 'shell', inline: "echo \"provisioning user is $(id #{$provision_username})\""
   config.vm.provision 'shell', inline: 'cat /etc/os-release', name: 'os-release'
