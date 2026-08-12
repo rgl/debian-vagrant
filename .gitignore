@@ -8,3 +8,5 @@ tmp/
 output*
 secrets*
 *-packages.txt
+*-sbom*.json
+*-sbom*.html
