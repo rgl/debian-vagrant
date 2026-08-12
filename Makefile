@@ -9,11 +9,16 @@ export PROXMOX_PASSWORD?=vagrant
 export PROXMOX_NODE?=pve
 
 help:
-	@echo type make build-libvirt, make build-uefi-libvirt, make build-proxmox, make build-hyperv, or make build-vsphere
+	@echo type one of:
+	@echo	make build-libvirt
+	@echo	make build-uefi-hyperv
+	@echo	make build-uefi-libvirt
+	@echo	make build-uefi-proxmox
+	@echo	make build-vsphere
 
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
 build-uefi-libvirt: debian-${VERSION}-uefi-amd64-libvirt.box
-build-proxmox: debian-${VERSION}-amd64-proxmox.box
+build-uefi-proxmox: debian-${VERSION}-uefi-amd64-proxmox.box
 build-uefi-hyperv: debian-${VERSION}-uefi-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
 
@@ -46,7 +51,7 @@ debian-${VERSION}-uefi-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hc
 		packer build -only=qemu.debian-uefi-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 	@./box-metadata.sh libvirt debian-${VERSION}-uefi-amd64 $@
 
-debian-${VERSION}-amd64-proxmox.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile-uefi.template
+debian-${VERSION}-uefi-amd64-proxmox.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile-uefi.template
 	rm -f $@
 	CHECKPOINT_DISABLE=1 \
 	PACKER_LOG=1 \
@@ -57,7 +62,7 @@ debian-${VERSION}-amd64-proxmox.box: preseed.txt provision.sh debian.pkr.hcl Vag
 	PACKER_LOG_PATH=$@.log \
 	PKR_VAR_version=${VERSION} \
 	PKR_VAR_vagrant_box=$@ \
-		packer build -only=proxmox-iso.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
+		packer build -only=proxmox-iso.debian-uefi-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 
 debian-${VERSION}-uefi-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.pkr.hcl Vagrantfile-uefi.template
 	rm -f $@
@@ -103,7 +108,7 @@ tmp/preseed-vsphere.txt: preseed.txt
 
 .PHONY: help \
 	build-libvirt \
-	build-proxmox \
 	build-uefi-hyperv \
 	build-uefi-libvirt \
+	build-uefi-proxmox \
 	build-vsphere

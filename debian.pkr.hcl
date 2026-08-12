@@ -157,8 +157,8 @@ source "qemu" "debian-uefi-amd64" {
   shutdown_command = "echo vagrant | sudo -S poweroff"
 }
 
-source "proxmox-iso" "debian-amd64" {
-  template_name            = "template-debian-${var.version}"
+source "proxmox-iso" "debian-uefi-amd64" {
+  template_name            = "template-debian-${var.version}-uefi"
   template_description     = <<-EOS
                               See https://github.com/rgl/debian-vagrant
 
@@ -166,7 +166,7 @@ source "proxmox-iso" "debian-amd64" {
                               Build At: ${timestamp()}
                               ```
                               EOS
-  tags                     = "debian-${var.version};template"
+  tags                     = "debian-${var.version}-uefi;template"
   insecure_skip_tls_verify = true
   node                     = var.proxmox_node
   machine                  = "q35"
@@ -270,7 +270,7 @@ build {
   sources = [
     "source.qemu.debian-amd64",
     "source.qemu.debian-uefi-amd64",
-    "source.proxmox-iso.debian-amd64",
+    "source.proxmox-iso.debian-uefi-amd64",
     "source.hyperv-iso.debian-uefi-amd64",
   ]
 
