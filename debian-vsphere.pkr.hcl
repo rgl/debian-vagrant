@@ -122,9 +122,61 @@ source "vsphere-iso" "debian-amd64" {
   shutdown_command = "echo vagrant | sudo -S poweroff"
 }
 
+source "vsphere-iso" "debian-uefi-amd64" {
+  vm_name        = "debian-${var.version}-uefi-amd64"
+  http_directory = "."
+  guest_os_type  = "debian12_64Guest"
+  storage {
+    disk_size             = var.disk_size
+    disk_thin_provisioned = true
+  }
+  disk_controller_type = ["pvscsi"]
+  vcenter_server       = var.vsphere_host
+  username             = var.vsphere_username
+  password             = var.vsphere_password
+  insecure_connection  = true
+  datacenter           = var.vsphere_datacenter
+  cluster              = var.vsphere_cluster
+  host                 = var.vsphere_esxi_host
+  folder               = var.vsphere_folder
+  datastore            = var.vsphere_datastore
+  network_adapters {
+    network      = var.vsphere_network
+    network_card = "vmxnet3"
+  }
+  convert_to_template = true
+  firmware            = "efi"
+  RAM                 = 2 * 1024
+  CPUs                = 4
+  iso_paths = [
+    var.vsphere_iso_url,
+  ]
+  ssh_username = "vagrant"
+  ssh_password = "vagrant"
+  boot_wait    = "15s"
+  boot_command = [
+    "c<wait>",
+    "linux /install.amd/vmlinuz",
+    " auto=true",
+    " url={{.HTTPIP}}:{{.HTTPPort}}/tmp/preseed-vsphere.txt",
+    " hostname=vagrant",
+    " domain=home",
+    " net.ifnames=0",
+    " BOOT_DEBUG=2",
+    " DEBCONF_DEBUG=5",
+    "<enter><wait5s>",
+    "initrd /install.amd/initrd.gz",
+    "<enter><wait5s>",
+    "boot",
+    "<enter><wait5s>",
+  ]
+  shutdown_command = "echo vagrant | sudo -S poweroff"
+}
+
 build {
   sources = [
     "source.vsphere-iso.debian-amd64",
+    "source.vsphere-iso.debian-uefi-amd64",
   ]
 
   provisioner "shell" {

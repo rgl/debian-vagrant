@@ -14,6 +14,7 @@ help:
 	@echo	make build-uefi-hyperv
 	@echo	make build-uefi-libvirt
 	@echo	make build-uefi-proxmox
+	@echo	make build-uefi-vsphere
 	@echo	make build-vsphere
 
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
@@ -21,6 +22,7 @@ build-uefi-libvirt: debian-${VERSION}-uefi-amd64-libvirt.box
 build-uefi-proxmox: debian-${VERSION}-uefi-amd64-proxmox.box
 build-uefi-hyperv: debian-${VERSION}-uefi-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
+build-uefi-vsphere: debian-${VERSION}-uefi-amd64-vsphere.box
 
 debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile.template
 	rm -f $@
@@ -101,6 +103,23 @@ debian-${VERSION}-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian
 	rm metadata.json
 	@./box-metadata.sh vsphere debian-${VERSION}-amd64 $@
 
+debian-${VERSION}-uefi-amd64-vsphere.box: tmp/preseed-vsphere.txt provision.sh debian-vsphere.pkr.hcl Vagrantfile-uefi.template
+	rm -f $@
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.init.log \
+		packer init debian-vsphere.pkr.hcl
+	CHECKPOINT_DISABLE=1 \
+	PACKER_LOG=1 \
+	PACKER_LOG_PATH=$@.log \
+	PKR_VAR_version=${VERSION} \
+	PKR_VAR_vagrant_box=$@ \
+		packer build -only=vsphere-iso.debian-uefi-amd64 -timestamp-ui debian-vsphere.pkr.hcl
+	echo '{"provider":"vsphere"}' >metadata.json
+	tar cvf $@ metadata.json
+	rm metadata.json
+	@./box-metadata.sh vsphere debian-${VERSION}-uefi-amd64 $@
+
 # see https://packages.debian.org/trixie/open-vm-tools
 tmp/preseed-vsphere.txt: preseed.txt
 	mkdir -p tmp
@@ -111,4 +130,5 @@ tmp/preseed-vsphere.txt: preseed.txt
 	build-uefi-hyperv \
 	build-uefi-libvirt \
 	build-uefi-proxmox \
+	build-uefi-vsphere \
 	build-vsphere
