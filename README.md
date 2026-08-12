@@ -9,7 +9,7 @@ Currently this targets [Debian 13 (Trixie)](https://www.debian.org/releases/trix
 
 ## Usage
 
-Install Packer 1.14+ and Vagrant 2.4+.
+Install Packer 1.16+ and Vagrant 2.4+.
 
 If your host has multiple IP addresses, you might need to set the
 `PACKER_HTTP_BIND_ADDRESS` environment variable, e.g.:
@@ -101,7 +101,7 @@ apt-get install -y sysfsutils
 systool -m kvm_intel -v
 ```
 
-Type `make build-libvirt` and follow the instructions.
+Type `make build-uefi-libvirt` and follow the instructions.
 
 Try the example guest:
 
@@ -228,7 +228,7 @@ export GOVC_DATASTORE='Datastore'
 export VSPHERE_OS_ISO="[$GOVC_DATASTORE] iso/debian-13.6.0-amd64-netinst.iso"
 export VSPHERE_ESXI_HOST='esxi.local'
 export VSPHERE_TEMPLATE_FOLDER='test/templates'
-export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-13-amd64"
+export VSPHERE_TEMPLATE_NAME="$VSPHERE_TEMPLATE_FOLDER/debian-13-uefi-amd64"
 export VSPHERE_VM_FOLDER='test'
 export VSPHERE_VM_NAME='debian-vagrant-example'
 export VSPHERE_VLAN='packer'
@@ -258,7 +258,7 @@ Create the base image:
 
 ```bash
 source secrets-vsphere.sh
-make build-vsphere
+make build-uefi-vsphere
 ```
 
 Try the example guest:

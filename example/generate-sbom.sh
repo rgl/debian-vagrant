@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-name_prefix="${1:-debian-13-amd64}"
+name_prefix="${1:-debian-13-uefi-amd64}"
 
 # see https://github.com/anchore/syft/releases
 # renovate: datasource=github-releases depName=anchore/syft

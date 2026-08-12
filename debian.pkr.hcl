@@ -66,52 +66,6 @@ variable "hyperv_vlan_id" {
   default = env("HYPERV_VLAN_ID")
 }
 
-source "qemu" "debian-amd64" {
-  accelerator  = "kvm"
-  machine_type = "q35"
-  cpus         = 2
-  memory       = 2 * 1024
-  qemuargs = [
-    ["-cpu", "host"]
-  ]
-  headless          = true
-  net_device        = "virtio-net"
-  http_bind_address = var.http_bind_address
-  http_directory    = "."
-  format            = "qcow2"
-  disk_size         = var.disk_size
-  disk_interface    = "virtio-scsi"
-  disk_cache        = "unsafe"
-  disk_discard      = "unmap"
-  iso_url           = var.iso_url
-  iso_checksum      = var.iso_checksum
-  ssh_username      = "vagrant"
-  ssh_password      = "vagrant"
-  ssh_timeout       = "60m"
-  boot_wait         = "5s"
-  boot_command = [
-    "<tab>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-    "/install.amd/vmlinuz initrd=/install.amd/initrd.gz",
-    " auto=true",
-    " url={{.HTTPIP}}:{{.HTTPPort}}/preseed.txt",
-    " hostname=vagrant",
-    " domain=home",
-    " net.ifnames=0",
-    " BOOT_DEBUG=2",
-    " DEBCONF_DEBUG=5",
-    "<enter>",
-  ]
-  shutdown_command = "echo vagrant | sudo -S poweroff"
-}
-
 source "qemu" "debian-uefi-amd64" {
   accelerator       = "kvm"
   machine_type      = "q35"
@@ -268,7 +222,6 @@ source "hyperv-iso" "debian-uefi-amd64" {
 
 build {
   sources = [
-    "source.qemu.debian-amd64",
     "source.qemu.debian-uefi-amd64",
     "source.proxmox-iso.debian-uefi-amd64",
     "source.hyperv-iso.debian-uefi-amd64",
@@ -294,14 +247,6 @@ build {
     only = [
       "debian-uefi-amd64-hyperv",
     ]
-  }
-
-  post-processor "vagrant" {
-    only = [
-      "qemu.debian-amd64",
-    ]
-    output               = var.vagrant_box
-    vagrantfile_template = "Vagrantfile.template"
   }
 
   post-processor "vagrant" {
