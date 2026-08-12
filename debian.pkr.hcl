@@ -228,12 +228,12 @@ source "proxmox-iso" "debian-amd64" {
   ]
 }
 
-source "hyperv-iso" "debian-amd64" {
+source "hyperv-iso" "debian-uefi-amd64" {
   temp_path         = "tmp"
   headless          = true
   http_bind_address = var.http_bind_address
   http_directory    = "."
-  generation        = 2
+  generation        = 2 # UEFI.
   cpus              = 2
   memory            = 2 * 1024
   switch_name       = var.hyperv_switch_name
@@ -271,7 +271,7 @@ build {
     "source.qemu.debian-amd64",
     "source.qemu.debian-uefi-amd64",
     "source.proxmox-iso.debian-amd64",
-    "source.hyperv-iso.debian-amd64",
+    "source.hyperv-iso.debian-uefi-amd64",
   ]
 
   provisioner "shell" {
@@ -292,14 +292,13 @@ build {
       "provision-local-hyperv.cmd"
     ]
     only = [
-      "debian-amd64-hyperv",
+      "debian-uefi-amd64-hyperv",
     ]
   }
 
   post-processor "vagrant" {
     only = [
       "qemu.debian-amd64",
-      "hyperv-iso.debian-amd64",
     ]
     output               = var.vagrant_box
     vagrantfile_template = "Vagrantfile.template"
@@ -308,6 +307,7 @@ build {
   post-processor "vagrant" {
     only = [
       "qemu.debian-uefi-amd64",
+      "hyperv-iso.debian-uefi-amd64",
     ]
     output               = var.vagrant_box
     vagrantfile_template = "Vagrantfile-uefi.template"

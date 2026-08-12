@@ -14,7 +14,7 @@ help:
 build-libvirt: debian-${VERSION}-amd64-libvirt.box
 build-uefi-libvirt: debian-${VERSION}-uefi-amd64-libvirt.box
 build-proxmox: debian-${VERSION}-amd64-proxmox.box
-build-hyperv: debian-${VERSION}-amd64-hyperv.box
+build-uefi-hyperv: debian-${VERSION}-uefi-amd64-hyperv.box
 build-vsphere: debian-${VERSION}-amd64-vsphere.box
 
 debian-${VERSION}-amd64-libvirt.box: preseed.txt provision.sh debian.pkr.hcl Vagrantfile.template
@@ -59,7 +59,7 @@ debian-${VERSION}-amd64-proxmox.box: preseed.txt provision.sh debian.pkr.hcl Vag
 	PKR_VAR_vagrant_box=$@ \
 		packer build -only=proxmox-iso.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
 
-debian-${VERSION}-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.pkr.hcl Vagrantfile.template
+debian-${VERSION}-uefi-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.pkr.hcl Vagrantfile-uefi.template
 	rm -f $@
 	CHECKPOINT_DISABLE=1 \
 	PACKER_LOG=1 \
@@ -70,8 +70,8 @@ debian-${VERSION}-amd64-hyperv.box: tmp/preseed-hyperv.txt provision.sh debian.p
 	PACKER_LOG_PATH=$@.log \
 	PKR_VAR_version=${VERSION} \
 	PKR_VAR_vagrant_box=$@ \
-		packer build -only=hyperv-iso.debian-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
-	@./box-metadata.sh hyperv debian-${VERSION}-amd64 $@
+		packer build -only=hyperv-iso.debian-uefi-amd64 -on-error=abort -timestamp-ui debian.pkr.hcl
+	@./box-metadata.sh hyperv debian-${VERSION}-uefi-amd64 $@
 
 # see https://docs.microsoft.com/en-us/windows-server/virtualization/hyper-v/supported-debian-virtual-machines-on-hyper-v
 # see https://packages.debian.org/trixie/hyperv-daemons
@@ -101,4 +101,9 @@ tmp/preseed-vsphere.txt: preseed.txt
 	mkdir -p tmp
 	sed -E 's,(d-i pkgsel/include string .+),\1 open-vm-tools,g' preseed.txt >$@
 
-.PHONY: help buid-libvirt buid-uefi-libvirt build-proxmox build-vsphere
+.PHONY: help \
+	build-libvirt \
+	build-proxmox \
+	build-uefi-hyperv \
+	build-uefi-libvirt \
+	build-vsphere
