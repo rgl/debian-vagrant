@@ -30,7 +30,7 @@ Depending on your hypervisor, follow its instructions:
 * [Hyper-V usage](#hyper-v-usage)
 * [VMware vSphere usage](#vmware-vsphere-usage)
 
-Lint the the source-code:
+Lint the source-code:
 
 ```bash
 ./mega-linter.sh
